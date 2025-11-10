@@ -16,8 +16,6 @@
     "noEmit": true,
     "outDir": "dist",
 
-
-
     /* Linting */
     "strictNullChecks": true,
     "skipLibCheck": true,
@@ -30,7 +28,7 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   }
 }
