@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite dev --host --port 3000",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
@@ -12,7 +12,13 @@
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "check": "biome check .",
-    "check:fix": "biome check --write ."
+    "check:fix": "biome check --write .",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up",
+    "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker compose up",
+    "docker:prod:build": "docker compose up --build",
+    "docker:prod:down": "docker compose down"
   },
   "dependencies": {
     "@tanstack/nitro-v2-vite-plugin": "^1.132.31",
