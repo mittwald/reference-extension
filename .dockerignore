@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+npm-debug.log
+pnpm-debug.log
+yarn-error.log
+
+# Build outputs
+.output
+.vinxi
+.tanstack
+.nitro
+dist
+build
+coverage
+
+# Development
+.git
+.gitignore
+.editorconfig
+.vscode
+.idea
+*.log
+
+# Testing
+coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Misc
+README.md
+CLAUDE.md
+Dockerfile
+.dockerignore
+docker-compose.yml
+todos.json
