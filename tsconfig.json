@@ -11,10 +11,18 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
     "noEmit": true,
+    "outDir": "dist",
+
+
 
     /* Linting */
+    "strictNullChecks": true,
     "skipLibCheck": true,
+    "noImplicitAny": true,
+    "strictPropertyInitialization": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
