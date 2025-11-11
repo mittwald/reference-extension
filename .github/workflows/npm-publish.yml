@@ -30,7 +30,7 @@ jobs:
       - name: 🚀 Create and publish versions
         uses: changesets/action@v1
         with:
-          publish: pnpm publish-packages
+          publish: pnpm publish-package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
