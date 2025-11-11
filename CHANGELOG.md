@@ -1,5 +1,11 @@
 # hello-world-extension
 
+## 0.0.5
+
+### Patch Changes
+
+- ccc8dc0: use github as package registry
+
 ## 0.0.4
 
 ### Patch Changes
