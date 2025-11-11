@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiWebhooksMittwaldRouteImport } from './routes/api/webhooks.mittwald'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksMittwaldRoute = ApiWebhooksMittwaldRouteImport.update({
+  id: '/api/webhooks/mittwald',
+  path: '/api/webhooks/mittwald',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/webhooks/mittwald': typeof ApiWebhooksMittwaldRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/webhooks/mittwald': typeof ApiWebhooksMittwaldRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/webhooks/mittwald': typeof ApiWebhooksMittwaldRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/webhooks/mittwald'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/webhooks/mittwald'
+  id: '__root__' | '/' | '/api/webhooks/mittwald'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiWebhooksMittwaldRoute: typeof ApiWebhooksMittwaldRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/mittwald': {
+      id: '/api/webhooks/mittwald'
+      path: '/api/webhooks/mittwald'
+      fullPath: '/api/webhooks/mittwald'
+      preLoaderRoute: typeof ApiWebhooksMittwaldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiWebhooksMittwaldRoute: ApiWebhooksMittwaldRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
