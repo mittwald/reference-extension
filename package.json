@@ -2,6 +2,7 @@
   "name": "hello-world-extension",
   "private": true,
   "type": "module",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite dev --host --port 3000",
     "build": "vite build",
@@ -18,7 +19,8 @@
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:prod": "docker compose up",
     "docker:prod:build": "docker compose up --build",
-    "docker:prod:down": "docker compose down"
+    "docker:prod:down": "docker compose down",
+    "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish"
   },
   "dependencies": {
     "@tanstack/nitro-v2-vite-plugin": "^1.132.31",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.4",
+    "@changesets/cli": "^2.29.7",
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
