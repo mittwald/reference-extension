@@ -5,6 +5,9 @@ import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
+    server: {
+        allowedHosts: true,
+    },
     plugins: [
         nitroV2Plugin(),
         // this is the plugin that enables path aliases
