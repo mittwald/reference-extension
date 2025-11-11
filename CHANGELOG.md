@@ -1,5 +1,11 @@
 # hello-world-extension
 
+## 0.0.7
+
+### Patch Changes
+
+- e2da26d: change package name to be scoped with mittwald
+
 ## 0.0.6
 
 ### Patch Changes
