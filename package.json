@@ -1,7 +1,7 @@
 {
   "name": "hello-world-extension",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "packageManager": "pnpm@9.14.4",
   "scripts": {
     "dev": "vite dev --host --port 3000",
