@@ -1,5 +1,11 @@
 # hello-world-extension
 
+## 0.0.4
+
+### Patch Changes
+
+- c392811: tested changesets
+
 ## 0.0.3
 
 ### Patch Changes
