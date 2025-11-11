@@ -1,6 +1,5 @@
 {
   "name": "hello-world-extension",
-  "private": true,
   "type": "module",
   "version": "0.0.3",
   "packageManager": "pnpm@9.14.4",
