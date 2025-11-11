@@ -1,5 +1,11 @@
 # hello-world-extension
 
+## 0.0.6
+
+### Patch Changes
+
+- c84841f: set publish config in package.json explicitly
+
 ## 0.0.5
 
 ### Patch Changes
