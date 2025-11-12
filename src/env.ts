@@ -9,5 +9,6 @@ export const getEnvironmentVariables = () =>
         POSTGRES_PORT: num(),
         POSTGRES_USE_SSL: bool({ default: false }),
         EXTENSION_ID: str(),
+        EXTENSION_SECRET: str(),
         ZROK_RESERVED_TOKEN: str(),
     });

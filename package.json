@@ -31,6 +31,7 @@
     "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish"
   },
   "dependencies": {
+    "@mittwald/ext-bridge": "0.2.0-alpha.551",
     "@tanstack/nitro-v2-vite-plugin": "^1.132.31",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-router": "^1.132.0",

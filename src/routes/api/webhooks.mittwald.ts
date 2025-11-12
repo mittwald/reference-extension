@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { CombinedWebhookHandlerFactory } from "@weissaufschwarz/mitthooks/factory/combined";
 import type {
     ExtensionStorage,
@@ -7,8 +8,7 @@ import type {
 import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { getDatabase } from "@/db";
 import { extensionInstances } from "@/db/schema";
-import {createFileRoute} from "@tanstack/react-router";
-import {getEnvironmentVariables} from "@/env.ts";
+import { getEnvironmentVariables } from "@/env.ts";
 
 class DrizzleExtensionStorage implements ExtensionStorage {
     public async upsertExtension(extension: ExtensionToBeAdded): Promise<void> {
@@ -39,7 +39,9 @@ class DrizzleExtensionStorage implements ExtensionStorage {
         }
     }
 
-    public async updateExtension(extension: ExtensionToBeUpdated): Promise<void> {
+    public async updateExtension(
+        extension: ExtensionToBeUpdated,
+    ): Promise<void> {
         try {
             await getDatabase()
                 .update(extensionInstances)
@@ -50,7 +52,9 @@ class DrizzleExtensionStorage implements ExtensionStorage {
                     active: extension.enabled,
                     consentedScopes: extension.consentedScopes,
                 })
-                .where(eq(extensionInstances.id, extension.extensionInstanceId));
+                .where(
+                    eq(extensionInstances.id, extension.extensionInstanceId),
+                );
         } catch (error) {
             console.error("Error updating extension:", error);
             throw new Error("Failed to update extension instance");
@@ -73,9 +77,7 @@ class DrizzleExtensionStorage implements ExtensionStorage {
     }
 }
 
-export const Route = createFileRoute(
-    "/api/webhooks/mittwald",
-)({
+export const Route = createFileRoute("/api/webhooks/mittwald")({
     server: {
         handlers: {
             POST: async ({ request }) => {
@@ -89,10 +91,14 @@ export const Route = createFileRoute(
                 try {
                     const rawBody = await request.text();
                     const signatureSerial =
-                        request.headers.get("X-Marketplace-Signature-Serial") || "";
+                        request.headers.get("X-Marketplace-Signature-Serial") ||
+                        "";
                     const signatureAlgorithm =
-                        request.headers.get("X-Marketplace-Signature-Algorithm") || "";
-                    const signature = request.headers.get("X-Marketplace-Signature") || "";
+                        request.headers.get(
+                            "X-Marketplace-Signature-Algorithm",
+                        ) || "";
+                    const signature =
+                        request.headers.get("X-Marketplace-Signature") || "";
 
                     const webhookContent = {
                         rawBody,
@@ -114,7 +120,7 @@ export const Route = createFileRoute(
                 return new Response("Webhook handled successfully", {
                     status: 200,
                 });
-            }
-        }
-    }
+            },
+        },
+    },
 });
