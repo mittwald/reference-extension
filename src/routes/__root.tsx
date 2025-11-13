@@ -1,8 +1,18 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { LayoutCard } from "@mittwald/flow-remote-react-components";
+import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+    createRootRouteWithContext,
+    HeadContent,
+    Outlet,
+    Scripts,
+} from "@tanstack/react-router";
 
-export const Route = createRootRoute({
+interface RouterContext {
+    queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
     head: () => ({
         meta: [
             {
@@ -18,28 +28,25 @@ export const Route = createRootRoute({
         ],
     }),
 
-    shellComponent: RootDocument,
+    component: RootComponent,
 });
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootComponent() {
+    const { queryClient } = Route.useRouteContext();
+
     return (
         <html lang="en">
             <head>
                 <HeadContent />
             </head>
             <body>
-                {children}
-                <TanStackDevtools
-                    config={{
-                        position: "bottom-right",
-                    }}
-                    plugins={[
-                        {
-                            name: "Tanstack Router",
-                            render: <TanStackRouterDevtoolsPanel />,
-                        },
-                    ]}
-                />
+                <QueryClientProvider client={queryClient}>
+                    <RemoteRoot>
+                        <LayoutCard>
+                            <Outlet />
+                        </LayoutCard>
+                    </RemoteRoot>
+                </QueryClientProvider>
                 <Scripts />
             </body>
         </html>
