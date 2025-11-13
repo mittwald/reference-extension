@@ -4,6 +4,7 @@ import { createMiddleware } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import type { FunctionMiddlewareClientNextFn } from "@tanstack/start-client-core";
 import { getEnvironmentVariables } from "../env";
+import {MittwaldAPIV2Client} from "@mittwald/api-client";
 
 type VerifiedSessionToken = Awaited<ReturnType<typeof verify>>;
 
@@ -61,6 +62,7 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
         const extensionSecret = env.EXTENSION_SECRET;
 
         const accessToken = await getAccessToken(sessionToken, extensionSecret);
+        const mittwaldClient = MittwaldAPIV2Client.newWithToken(accessToken.publicToken)
 
         return next({
             context: {
@@ -68,6 +70,7 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
                 extensionInstanceId: verifiedSessionToken.extensionInstanceId,
                 userId: verifiedSessionToken.userId,
                 accessToken: accessToken.publicToken,
+                mittwaldClient,
             },
         });
     });

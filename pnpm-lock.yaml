@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@mittwald/api-client':
+        specifier: ^4.258.0
+        version: 4.258.0
       '@mittwald/ext-bridge':
         specifier: 0.2.0-alpha.551
         version: 0.2.0-alpha.551(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -767,8 +770,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@mittwald/api-client-commons@4.256.0':
-    resolution: {integrity: sha512-WGHWsyH07/4MRVK8Dqtfw+AIMWvebvu0Tu17/XGph8lpzWik+oF1jriRP6OVKoiPieMMZGiL/6cx4obsMuZx/A==}
+  '@mittwald/api-client-commons@4.258.0':
+    resolution: {integrity: sha512-YYFedIRhR21zsghRsICeB8ovDp9xpl1Cg/IQvYtinHYhatvlYPGOOvpXo2j47VDG7D9DiwhfOIaic8PW8SK8Ow==}
     peerDependencies:
       '@jest/globals': '*'
       '@mittwald/react-use-promise': ^2.6.0
@@ -778,8 +781,8 @@ packages:
       '@mittwald/react-use-promise':
         optional: true
 
-  '@mittwald/api-client@4.256.0':
-    resolution: {integrity: sha512-tkaz5+KvyVefZSAjTg+GRRZ5WzCEfl4m8vTozw7RB1tugUfmgkILWX8qZ9cdWV4ZVx2doYCZ66Tx0ZemqRerfQ==}
+  '@mittwald/api-client@4.258.0':
+    resolution: {integrity: sha512-HvN3Nobsi5I7deO/98mG977Vk6FTGB1UUt8VG+/4OWvSKUiVPe7M+noHIVR1Ov10mcHSZUzkv66Blzl3PDBZUg==}
     peerDependencies:
       '@mittwald/react-use-promise': ^2.6.0
     peerDependenciesMeta:
@@ -4325,7 +4328,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@mittwald/api-client-commons@4.256.0':
+  '@mittwald/api-client-commons@4.258.0':
     dependencies:
       '@types/parse-path': 7.1.0
       axios: 1.13.2
@@ -4335,9 +4338,9 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@mittwald/api-client@4.256.0':
+  '@mittwald/api-client@4.258.0':
     dependencies:
-      '@mittwald/api-client-commons': 4.256.0
+      '@mittwald/api-client-commons': 4.258.0
       browser-or-node: 3.0.0
     transitivePeerDependencies:
       - '@jest/globals'
@@ -5159,7 +5162,7 @@ snapshots:
 
   '@weissaufschwarz/mitthooks@0.2.5':
     dependencies:
-      '@mittwald/api-client': 4.256.0
+      '@mittwald/api-client': 4.258.0
       '@noble/ed25519': 2.3.0
       zod: 3.25.76
     transitivePeerDependencies:
