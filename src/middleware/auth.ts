@@ -1,3 +1,4 @@
+import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { getSessionToken } from "@mittwald/ext-bridge/browser";
 import { getAccessToken, verify } from "@mittwald/ext-bridge/node";
 import { createMiddleware } from "@tanstack/react-start";
@@ -61,6 +62,9 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
         const extensionSecret = env.EXTENSION_SECRET;
 
         const accessToken = await getAccessToken(sessionToken, extensionSecret);
+        const mittwaldClient = MittwaldAPIV2Client.newWithToken(
+            accessToken.publicToken,
+        );
 
         return next({
             context: {
@@ -68,6 +72,7 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
                 extensionInstanceId: verifiedSessionToken.extensionInstanceId,
                 userId: verifiedSessionToken.userId,
                 accessToken: accessToken.publicToken,
+                mittwaldClient,
             },
         });
     });

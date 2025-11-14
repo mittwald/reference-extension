@@ -7,6 +7,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 const config = defineConfig({
     server: {
         allowedHosts: true,
+        port: 3000,
     },
     plugins: [
         nitroV2Plugin(),
