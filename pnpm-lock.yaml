@@ -20,6 +20,12 @@ importers:
       '@mittwald/flow-remote-react-components':
         specifier: 0.2.0-alpha.557
         version: 0.2.0-alpha.557(@internationalized/date@3.10.0)(@mittwald/ext-bridge@0.2.0-alpha.557(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))(@preact/signals-core@1.12.1)(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.66.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(redux@5.0.1)
+      '@mittwald/mstudio-ext-react-components':
+        specifier: 0.2.0-alpha.557
+        version: 0.2.0-alpha.557(@mittwald/flow-remote-react-components@0.2.0-alpha.557(@internationalized/date@3.10.0)(@mittwald/ext-bridge@0.2.0-alpha.557(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))(@preact/signals-core@1.12.1)(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.66.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(redux@5.0.1))(react@19.2.0)
+      '@mittwald/react-ghostmaker':
+        specifier: ^1.4.2
+        version: 1.4.2(@tanstack/react-query@5.90.9(react@19.2.0))(react@19.2.0)
       '@mittwald/react-use-promise':
         specifier: ^4.2.2
         version: 4.2.2(axios@1.13.2)(react@19.2.0)
@@ -29,6 +35,9 @@ importers:
       '@tanstack/react-devtools':
         specifier: ^0.7.0
         version: 0.7.11(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(csstype@3.1.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)
+      '@tanstack/react-query':
+        specifier: ^5.90.9
+        version: 5.90.9(react@19.2.0)
       '@tanstack/react-router':
         specifier: ^1.136.1
         version: 1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -37,7 +46,7 @@ importers:
         version: 1.136.1(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(@types/node@22.19.0)(csstype@3.1.3)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
       '@tanstack/react-router-ssr-query':
         specifier: ^1.136.1
-        version: 1.136.1(@tanstack/query-core@5.90.7)(@tanstack/react-query@5.90.7(react@19.2.0))(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.136.1(@tanstack/query-core@5.90.9)(@tanstack/react-query@5.90.9(react@19.2.0))(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tanstack/react-start':
         specifier: ^1.132.0
         version: 1.134.14(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.2.2(@types/node@22.19.0)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
@@ -899,9 +908,26 @@ packages:
       react-hook-form:
         optional: true
 
+  '@mittwald/mstudio-ext-react-components@0.2.0-alpha.557':
+    resolution: {integrity: sha512-t/ygGlevcKO518gPu+LfnuJYcCKBLSgfETWRwmIi7rR7Z3an7tDwO2tw8yOseEgI0YvC1qlBtuzI7Phl380vvA==}
+    engines: {node: '>=20.19'}
+    peerDependencies:
+      '@mittwald/flow-remote-react-components': 0.2.0-alpha.556
+      react: ^19
+
   '@mittwald/password-tools-js@3.0.0-alpha.18':
     resolution: {integrity: sha512-qp5BZ4mielqxx7oFWfFF9C5azH9Ki/KteAxR/naAwmA2gSts4/e43TGJwGAclczuHbnO/tHL6cBIlIGX4drvwQ==}
     hasBin: true
+
+  '@mittwald/react-ghostmaker@1.4.2':
+    resolution: {integrity: sha512-15B87xv5nox0LpOCkqIsbsdBUqv8fRCHs6yjnAQvV8QgA+OPT5YUZjV4eT38xKuL2wQoo8GdtBNQYykw3/4srw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5
+      polytype: ^0.17.0
+      react: '>=19.2'
+    peerDependenciesMeta:
+      polytype:
+        optional: true
 
   '@mittwald/react-tunnel@0.2.0-alpha.557':
     resolution: {integrity: sha512-0DbyYBS4VlnbpG1dbBYlVxDCU1KmfVjAKXz+9LIRgm2Jhw+O7LG7g/DMih5ZoZv30U9SYXKuaBH19AicAxwckg==}
@@ -1974,8 +2000,8 @@ packages:
     peerDependencies:
       vite: '>=7.0.0'
 
-  '@tanstack/query-core@5.90.7':
-    resolution: {integrity: sha512-6PN65csiuTNfBMXqQUxQhCNdtm1rV+9kC9YwWAIKcaxAauq3Wu7p18j3gQY3YIBJU70jT/wzCCZ2uqto/vQgiQ==}
+  '@tanstack/query-core@5.90.9':
+    resolution: {integrity: sha512-UFOCQzi6pRGeVTVlPNwNdnAvT35zugcIydqjvFUzG62dvz2iVjElmNp/hJkUoM5eqbUPfSU/GJIr/wbvD8bTUw==}
 
   '@tanstack/react-devtools@0.7.11':
     resolution: {integrity: sha512-a2Lmz8x+JoDrsU6f7uKRcyyY+k8mA/n5mb9h7XJ3Fz/y3+sPV9t7vAW1s5lyNkQyyDt6V1Oim99faLthoJSxMw==}
@@ -1986,8 +2012,8 @@ packages:
       react: '>=16.8'
       react-dom: '>=16.8'
 
-  '@tanstack/react-query@5.90.7':
-    resolution: {integrity: sha512-wAHc/cgKzW7LZNFloThyHnV/AX9gTg3w5yAv0gvQHPZoCnepwqCMtzbuPbb2UvfvO32XZ46e8bPOYbfZhzVnnQ==}
+  '@tanstack/react-query@5.90.9':
+    resolution: {integrity: sha512-Zke2AaXiaSfnG8jqPZR52m8SsclKT2d9//AgE/QIzyNvbpj/Q2ln+FsZjb1j69bJZUouBvX2tg9PHirkTm8arw==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -6113,6 +6139,12 @@ snapshots:
       - redux
       - supports-color
 
+  '@mittwald/mstudio-ext-react-components@0.2.0-alpha.557(@mittwald/flow-remote-react-components@0.2.0-alpha.557(@internationalized/date@3.10.0)(@mittwald/ext-bridge@0.2.0-alpha.557(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))(@preact/signals-core@1.12.1)(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.66.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(redux@5.0.1))(react@19.2.0)':
+    dependencies:
+      '@mittwald/flow-remote-react-components': 0.2.0-alpha.557(@internationalized/date@3.10.0)(@mittwald/ext-bridge@0.2.0-alpha.557(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))(@preact/signals-core@1.12.1)(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.66.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(redux@5.0.1)
+      '@types/react': 19.2.2
+      react: 19.2.0
+
   '@mittwald/password-tools-js@3.0.0-alpha.18':
     dependencies:
       '@zxcvbn-ts/core': 3.0.4
@@ -6132,6 +6164,15 @@ snapshots:
       yargs: 17.7.2
     transitivePeerDependencies:
       - supports-color
+
+  '@mittwald/react-ghostmaker@1.4.2(@tanstack/react-query@5.90.9(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@sindresorhus/is': 7.1.1
+      '@tanstack/react-query': 5.90.9(react@19.2.0)
+      context: 3.0.33
+      object-code: 1.3.4
+      react: 19.2.0
+      type-fest: 5.2.0
 
   '@mittwald/react-tunnel@0.2.0-alpha.557(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
@@ -7627,7 +7668,7 @@ snapshots:
       - uploadthing
       - xml2js
 
-  '@tanstack/query-core@5.90.7': {}
+  '@tanstack/query-core@5.90.9': {}
 
   '@tanstack/react-devtools@0.7.11(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(csstype@3.1.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)':
     dependencies:
@@ -7642,9 +7683,9 @@ snapshots:
       - solid-js
       - utf-8-validate
 
-  '@tanstack/react-query@5.90.7(react@19.2.0)':
+  '@tanstack/react-query@5.90.9(react@19.2.0)':
     dependencies:
-      '@tanstack/query-core': 5.90.7
+      '@tanstack/query-core': 5.90.9
       react: 19.2.0
 
   '@tanstack/react-router-devtools@1.136.1(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(@types/node@22.19.0)(csstype@3.1.3)(jiti@2.6.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)':
@@ -7671,12 +7712,12 @@ snapshots:
       - tsx
       - yaml
 
-  '@tanstack/react-router-ssr-query@1.136.1(@tanstack/query-core@5.90.7)(@tanstack/react-query@5.90.7(react@19.2.0))(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@tanstack/react-router-ssr-query@1.136.1(@tanstack/query-core@5.90.9)(@tanstack/react-query@5.90.9(react@19.2.0))(@tanstack/react-router@1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.136.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@tanstack/query-core': 5.90.7
-      '@tanstack/react-query': 5.90.7(react@19.2.0)
+      '@tanstack/query-core': 5.90.9
+      '@tanstack/react-query': 5.90.9(react@19.2.0)
       '@tanstack/react-router': 1.136.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@tanstack/router-ssr-query-core': 1.136.1(@tanstack/query-core@5.90.7)(@tanstack/router-core@1.136.1)
+      '@tanstack/router-ssr-query-core': 1.136.1(@tanstack/query-core@5.90.9)(@tanstack/router-core@1.136.1)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
     transitivePeerDependencies:
@@ -7859,9 +7900,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-ssr-query-core@1.136.1(@tanstack/query-core@5.90.7)(@tanstack/router-core@1.136.1)':
+  '@tanstack/router-ssr-query-core@1.136.1(@tanstack/query-core@5.90.9)(@tanstack/router-core@1.136.1)':
     dependencies:
-      '@tanstack/query-core': 5.90.7
+      '@tanstack/query-core': 5.90.9
       '@tanstack/router-core': 1.136.1
 
   '@tanstack/router-utils@1.133.19':
