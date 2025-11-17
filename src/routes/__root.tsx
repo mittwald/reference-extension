@@ -1,4 +1,3 @@
-import { LayoutCard } from "@mittwald/flow-remote-react-components";
 import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -42,9 +41,7 @@ function RootComponent() {
             <body>
                 <QueryClientProvider client={queryClient}>
                     <RemoteRoot>
-                        <LayoutCard>
-                            <Outlet />
-                        </LayoutCard>
+                        <Outlet />
                     </RemoteRoot>
                 </QueryClientProvider>
                 <Scripts />
