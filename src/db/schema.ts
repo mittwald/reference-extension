@@ -22,3 +22,15 @@ export const extensionInstances = pgTable("extension_instance", {
 });
 
 export type ExtensionInstance = typeof extensionInstances.$inferSelect;
+
+export const comments = pgTable("comments", {
+    id: varchar({ length: 36 }).primaryKey(),
+    extensionInstanceId: varchar({ length: 36 })
+        .notNull()
+        .references(() => extensionInstances.id),
+    userId: varchar({ length: 36 }).notNull(),
+    text: text().notNull(),
+    createdAt: timestamp().defaultNow().notNull(),
+});
+
+export type Comment = typeof comments.$inferSelect;
