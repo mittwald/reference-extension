@@ -1,3 +1,4 @@
+import { LayoutCard } from "@mittwald/flow-remote-react-components";
 import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -6,6 +7,8 @@ import {
     Outlet,
     Scripts,
 } from "@tanstack/react-router";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "@/components/ErrorFallback.tsx";
 
 interface RouterContext {
     queryClient: QueryClient;
@@ -41,7 +44,20 @@ function RootComponent() {
             <body>
                 <QueryClientProvider client={queryClient}>
                     <RemoteRoot>
-                        <Outlet />
+                        <ErrorBoundary
+                            fallbackRender={(props) => (
+                                <LayoutCard>
+                                    <ErrorFallback
+                                        error={props.error}
+                                        resetErrorBoundary={
+                                            props.resetErrorBoundary
+                                        }
+                                    />
+                                </LayoutCard>
+                            )}
+                        >
+                            <Outlet />
+                        </ErrorBoundary>
                     </RemoteRoot>
                 </QueryClientProvider>
                 <Scripts />

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getUserName } from "@/domain/comments/user.ts";
 import { authenticationMiddlewareWithAccessToken } from "@/middleware/auth.ts";
-import { getUserName } from "../../domain/comments/user";
 
 export const getUserNameServerFunction = createServerFn({
     method: "GET",

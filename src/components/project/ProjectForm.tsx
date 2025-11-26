@@ -13,6 +13,7 @@ import {
 } from "@mittwald/flow-remote-react-components/react-hook-form";
 import { useForm } from "react-hook-form";
 import { ProjectClientGhost } from "@/ghosts.ts";
+import { useFormErrorHandling } from "@/hooks/useFormErrorHandling.tsx";
 
 interface FormValues {
     projectDescription: string;
@@ -32,11 +33,14 @@ export const ProjectForm = () => {
 
     const Field = typedField(form);
 
-    const handleSubmit = async (values: FormValues) => {
-        await ProjectClientGhost.editProjectDescription({ data: values });
-        void invalidateProject();
-        editDescriptionModalController.close();
-    };
+    const [RootError, handleSubmit] = useFormErrorHandling(
+        form,
+        async (values) => {
+            await ProjectClientGhost.editProjectDescription({ data: values });
+            void invalidateProject();
+            editDescriptionModalController.close();
+        },
+    );
 
     return (
         <Form form={form} onSubmit={handleSubmit}>
@@ -51,6 +55,8 @@ export const ProjectForm = () => {
                         <Label>Projektbeschreibung</Label>
                     </TextField>
                 </Field>
+
+                <RootError />
 
                 <ActionGroup>
                     <Action closeOverlay="Modal">
