@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getUserAvatar } from "@/domain/comments/user.ts";
 import { authenticationMiddlewareWithAccessToken } from "@/middleware/auth.ts";
-import { getUserAvatar } from "../../domain/comments/user";
 
 export const getUserAvatarServerFunction = createServerFn({
     method: "GET",

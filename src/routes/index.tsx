@@ -6,7 +6,7 @@ import { CommentsCard } from "@/components/comments/CommentsCard";
 import { DeveloperPortalCard } from "@/components/DeveloperPortalCard.tsx";
 import { FlowDocumentationCard } from "@/components/FlowDocumentationCard.tsx";
 import { GreetingCard } from "@/components/GreetingCard.tsx";
-import { ProjectCard } from "@/components/ProjectCard.tsx";
+import { ProjectCard } from "@/components/project/ProjectCard.tsx";
 import { ReadmeCard } from "@/components/ReadmeCard.tsx";
 
 export const Route = createFileRoute("/")({

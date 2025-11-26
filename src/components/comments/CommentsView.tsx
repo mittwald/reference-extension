@@ -23,7 +23,8 @@ export const CommentsView = () => {
                     <Text>
                         Du hast derzeit noch keine Kommentare hinzugefügt.
                         Schreibe einen ersten Kommentar, um zu sehen, wie die{" "}
-                        <InlineCode>Chat</InlineCode>-Komponente funktioniert.
+                        <InlineCode>Chat</InlineCode>
+                        -Komponente funktioniert.
                     </Text>
                 </IllustratedMessage>
             ) : (

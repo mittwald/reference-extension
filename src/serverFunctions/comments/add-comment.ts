@@ -4,7 +4,7 @@ import { DrizzleCommentStorage } from "@/domain/comments/comments";
 import { authenticationMiddlewareWithAccessToken } from "@/middleware/auth.ts";
 
 export const addCommentInputSchema = z.object({
-    text: z.string(),
+    text: z.string().min(3),
 });
 
 export const addCommentServerFunction = createServerFn({

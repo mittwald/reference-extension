@@ -6,8 +6,12 @@ import {
     Section,
     Text,
 } from "@mittwald/flow-remote-react-components";
-import { CommentForm } from "./CommentForm";
-import { CommentsView } from "./CommentsView";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { ChatLoading } from "@/components/comments/ChatLoading.tsx";
+import { CommentForm } from "@/components/comments/CommentForm.tsx";
+import { CommentsView } from "@/components/comments/CommentsView.tsx";
+import { ErrorFallback } from "@/components/ErrorFallback.tsx";
 
 export const CommentsCard = () => {
     return (
@@ -23,10 +27,14 @@ export const CommentsCard = () => {
                     pro ExtensionInstance verwaltet werden können.
                 </Text>
                 <Section>
-                    <Chat height={400}>
-                        <CommentsView />
-                        <CommentForm />
-                    </Chat>
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <Suspense fallback={<ChatLoading />}>
+                            <Chat height={400}>
+                                <CommentsView />
+                                <CommentForm />
+                            </Chat>
+                        </Suspense>
+                    </ErrorBoundary>
                 </Section>
             </Section>
         </LayoutCard>

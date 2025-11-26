@@ -11,29 +11,41 @@ import {
     SubmitButton,
     typedField,
 } from "@mittwald/flow-remote-react-components/react-hook-form";
+import { useErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { CommentsClientGhost } from "@/ghosts.ts";
+import { useFormErrorHandling } from "@/hooks/useFormErrorHandling.tsx";
 
 interface FormValues {
     text: string;
 }
 
 export const CommentForm = () => {
-    const { invalidate } = CommentsClientGhost.getComments().useGhost();
+    const { invalidate: invalidateComments } =
+        CommentsClientGhost.getComments().useGhost();
+
+    const { showBoundary } = useErrorBoundary();
 
     const form = useForm<FormValues>({});
 
     const Field = typedField(form);
 
-    const handleSubmit = async (values: FormValues) => {
-        await CommentsClientGhost.addComment({ data: values });
-        void invalidate();
-        form.reset();
-    };
+    const [RootError, handleSubmit] = useFormErrorHandling(
+        form,
+        async (values: FormValues) => {
+            await CommentsClientGhost.addComment({ data: values });
+            void invalidateComments();
+            form.reset();
+        },
+    );
 
-    const handleReset = async () => {
-        await CommentsClientGhost.deleteComments();
-        void invalidate();
+    const resetComments = async () => {
+        try {
+            await CommentsClientGhost.deleteComments();
+            void invalidateComments();
+        } catch (error) {
+            showBoundary(error);
+        }
     };
 
     return (
@@ -49,9 +61,12 @@ export const CommentForm = () => {
                         autoResizeMaxRows={10}
                     />
                 </Field>
+
+                <RootError />
+
                 <ActionGroup>
                     <Flex justify="end" gap="m" direction="row-reverse">
-                        <Action action={handleReset}>
+                        <Action action={resetComments}>
                             <Button variant="soft" color="secondary">
                                 Kommentare aufräumen
                             </Button>

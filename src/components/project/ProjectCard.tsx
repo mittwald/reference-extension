@@ -7,9 +7,11 @@ import {
     Text,
 } from "@mittwald/flow-remote-react-components";
 import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { EditProjectDescriptionModal } from "@/components/EditProjectDescriptionModal.tsx";
-import { ProjectLoadingView } from "@/components/ProjectLoadingView.tsx";
-import { ProjectView } from "@/components/ProjectView.tsx";
+import { ErrorFallback } from "@/components/ErrorFallback.tsx";
+import { ProjectLoadingView } from "@/components/project/ProjectLoadingView.tsx";
+import { ProjectView } from "@/components/project/ProjectView.tsx";
 
 export const ProjectCard = () => {
     return (
@@ -34,9 +36,11 @@ export const ProjectCard = () => {
                     </Text>
                 </Section>
                 <Section>
-                    <Suspense fallback={<ProjectLoadingView />}>
-                        <ProjectView />
-                    </Suspense>
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <Suspense fallback={<ProjectLoadingView />}>
+                            <ProjectView />
+                        </Suspense>
+                    </ErrorBoundary>
                 </Section>
             </Section>
         </LayoutCard>

@@ -6,7 +6,9 @@ import {
     ModalTrigger,
     Text,
 } from "@mittwald/flow-remote-react-components";
-import { ProjectForm } from "@/components/ProjectForm.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "@/components/ErrorFallback.tsx";
+import { ProjectForm } from "@/components/project/ProjectForm.tsx";
 
 export const EditProjectDescriptionModal = () => {
     return (
@@ -23,7 +25,9 @@ export const EditProjectDescriptionModal = () => {
                         solltest im Hauptmenü des mStudio sofort eine Änderung
                         bemerken können.
                     </Text>
-                    <ProjectForm />
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <ProjectForm />
+                    </ErrorBoundary>
                 </Content>
             </Modal>
         </ModalTrigger>

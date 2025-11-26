@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { DrizzleCommentStorage } from "@/domain/comments/comments.ts";
 import { authenticationMiddlewareWithAccessToken } from "@/middleware/auth.ts";
-import { DrizzleCommentStorage } from "../../domain/comments/comments";
 
 export const getCommentsForExtensionInstanceServerFunction = createServerFn({
     method: "GET",

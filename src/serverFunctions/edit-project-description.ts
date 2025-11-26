@@ -4,7 +4,7 @@ import { editProjectDescription } from "@/domain/project.ts";
 import { authenticationMiddlewareWithAccessToken } from "@/middleware/auth.ts";
 
 export const editProjectDescriptionInputSchema = z.object({
-    projectDescription: z.string(),
+    projectDescription: z.string().min(3),
 });
 
 export const editProjectDescriptionServerFunction = createServerFn({
@@ -12,10 +12,16 @@ export const editProjectDescriptionServerFunction = createServerFn({
 })
     .middleware([authenticationMiddlewareWithAccessToken])
     .inputValidator(editProjectDescriptionInputSchema)
-    .handler(async ({ context: { mittwaldClient, contextId }, data }) => {
-        return editProjectDescription(
-            mittwaldClient,
-            contextId,
-            data.projectDescription,
-        );
-    });
+    .handler(
+        async ({
+            context: { mittwaldClient, extensionInstanceId, contextId },
+            data,
+        }) => {
+            return editProjectDescription(
+                mittwaldClient,
+                extensionInstanceId,
+                contextId,
+                data.projectDescription,
+            );
+        },
+    );
