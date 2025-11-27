@@ -78,7 +78,7 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0(react@19.2.0)
       react-hook-form:
-        specifier: ^7.66.0
+        specifier: ^7.66.1
         version: 7.66.1(react@19.2.0)
       uuid:
         specifier: ^13.0.0
@@ -87,47 +87,47 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
       zod:
-        specifier: ^4.1.12
+        specifier: ^4.1.13
         version: 4.1.13
     devDependencies:
       '@biomejs/biome':
-        specifier: ^2.3.4
+        specifier: ^2.3.7
         version: 2.3.7
       '@changesets/cli':
         specifier: ^2.29.7
         version: 2.29.7(@types/node@22.19.1)
       '@types/node':
-        specifier: ^22.10.2
+        specifier: ^22.19.1
         version: 22.19.1
       '@types/pg':
         specifier: ^8.15.6
         version: 8.15.6
       '@types/react':
-        specifier: ^19.2.0
+        specifier: ^19.2.7
         version: 19.2.7
       '@types/react-dom':
-        specifier: ^19.2.0
+        specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.7)
       '@vitejs/plugin-react':
-        specifier: ^5.0.4
+        specifier: ^5.1.1
         version: 5.1.1(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
       drizzle-kit:
-        specifier: ^0.31.6
+        specifier: ^0.31.7
         version: 0.31.7
       jsdom:
-        specifier: ^27.0.0
+        specifier: ^27.2.0
         version: 27.2.0
       typescript:
-        specifier: ^5.7.2
+        specifier: ^5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.7
+        specifier: ^7.2.4
         version: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
       vitest:
-        specifier: ^3.0.5
+        specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.1)(jiti@2.6.1)(jsdom@27.2.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
       web-vitals:
         specifier: ^5.1.0
