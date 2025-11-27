@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@mittwald/api-client':
-        specifier: ^4.259.0
+        specifier: ^4.267.0
         version: 4.267.0(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))
       '@mittwald/api-client-commons':
-        specifier: ^4.259.0
+        specifier: ^4.267.0
         version: 4.267.0(@mittwald/react-use-promise@4.2.2(axios@1.13.2)(react@19.2.0))
       '@mittwald/ext-bridge':
         specifier: 0.2.0-alpha.557
@@ -4282,8 +4282,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+  prettier@3.7.0:
+    resolution: {integrity: sha512-pBiBj/gjRY9Qpk1b7cDda6Rbwvkaggos779AHQ0Ek/odwDx6xG6DRBxtnp1QmxbuD7pAO8/SQ8vuhtGv9LoLWA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7842,7 +7842,7 @@ snapshots:
       '@tanstack/router-core': 1.139.7
       '@tanstack/router-utils': 1.139.0
       '@tanstack/virtual-file-routes': 1.139.0
-      prettier: 3.6.2
+      prettier: 3.7.0
       recast: 0.23.11
       source-map: 0.7.6
       tsx: 4.20.6
@@ -10313,7 +10313,7 @@ snapshots:
 
   prettier@2.8.8: {}
 
-  prettier@3.6.2: {}
+  prettier@3.7.0: {}
 
   pretty-bytes@7.1.0: {}
 
