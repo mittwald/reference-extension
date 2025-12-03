@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MStudioFrontendFragment } from "@/components/MStudioFrontendFragment.tsx";
+import { Dashboard } from "@/components/Dashboard";
+import { Title } from "@mittwald/mstudio-ext-react-components";
+import { Section } from "@mittwald/flow-remote-react-components";
 
 export const Route = createFileRoute("/")({
     component: App,
@@ -8,6 +10,11 @@ export const Route = createFileRoute("/")({
 
 function App() {
     return (
-        <MStudioFrontendFragment />
+        <>
+            <Title>Hallo Contributor!</Title>
+            <Section>
+                <Dashboard />
+            </Section>
+        </>
     );
 }

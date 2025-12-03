@@ -29,13 +29,8 @@
     "docker:prod:build": "docker compose up --build",
     "docker:prod:down": "docker compose down",
     "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish",
-    "cleanup:webhooks": "rm -r ./src/routes/api/ && pnpm run build",
-    "cleanup:db": "rm ./src/db/schema.ts && touch ./src/db/schema.ts",
-    "cleanup:comments": "rm -fr src/components/comments src/domain/comments src/serverFunctions/comments && awk '!/Comment/' ./src/routes/index.tsx > tmp.tsx && mv tmp.tsx ./src/routes/index.tsx",
-    "cleanup:fragment": "find ./src/components ! -name 'ReadmeCard.tsx' -type f -exec rm -f {} + && sed -i 's/MStudioFrontendFragment/ReadmeCard/g' src/routes/index.tsx",
-    "cleanup:cleanup": "jq '.scripts |= with_entries(select(.key | startswith(\"cleanup\") | not))' package.json > tmp.json && mv tmp.json package.json",
-    "cleanup:git": "read -p 'cleanup git?[yes/no]' a && [ $a == \"yes\" ] && rm -rf ./.git",
-    "cleanup:all": "pnpm run cleanup:db && pnpm run cleanup:comments && pnpm run cleanup:webhooks && pnpm run cleanup fragment && pnpm run cleanup:git && pnpm run cleanup:cleanup"
+    "cleanup:all": "./cleanup.sh -- all",
+    "cleanup:webhook": "./cleanup.sh -- rmDbRelation rmWebhooks"
   },
   "dependencies": {
     "@mittwald/api-client": "^4.267.0",
