@@ -6,17 +6,16 @@ Dennoch nimmt es dem Entwickler einer Extension sehr viel Arbeit bei diesem krit
 
 ## Fehler-Architektur
 
-1. Domain Layer: Business-Logik wirft typisierte PublicError oder regulärer JavaScript Errors
+1. Domain Layer: Business-Logik wirft typisierte PublicError oder reguläre JavaScript Errors
 2. Middleware Layer: Middleware fängt Fehler und transformiert sie zu HTTP-Responses
 3. Server Function Layer: Server Functions propagieren Fehler zum Client
-4. Client Layer: UI-Komponenten zeigen Fehler dem User an
+4. Client Layer: UI-Komponenten dem User die Fehler an
 
 ## Fehler-Typen
 
-Die Extension definiert eine eigene Fehler-Klasse in `src/global-errors.ts`:
+Die Extension definiert eine eigene Fehler-Klasse in [`src/global-errors.ts`](src/global-errors.ts):
 
 ```typescript
-export
 export abstract class PublicError extends Error {
     public readonly isRetryable: boolean;
     public readonly statusCode: number;
@@ -39,8 +38,14 @@ export abstract class PublicError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
+```
 
+Die `cause`-Property wird für das serverseitige Logging verwendet und nicht an das Frontend weitergegeben.
+Die `isRetryable`-Property steuert, ob im Frontend die Möglichkeit geboten wird, die Route erneut aufzurufen.
 
+Fehler, die transparent an das Frontend weitergegeben werden sollen, können von dieser Klasse erben.
+
+```typescript
 // Beispiel: Fehlende Berechtigungen
 export class PermissionsInsufficientError extends PublicError {
     public constructor(extensionInstanceId: string) {
@@ -55,14 +60,9 @@ export class PermissionsInsufficientError extends PublicError {
 }
 ```
 
-Die `cause`-Property wird für das serverseitige Logging verwendet und nicht an das Frontend weitergegeben.
-Die `isRetryable`-Property steuert, ob im Frontend die Möglichkeit geboten wird, die Route erneut aufzurufen.
-
-Fehler, die transparent an das Frontend weitergegeben werden sollen, können von dieser Klasse erben.
-
 ## Server-seitiges Error Handling
 
-Die `handleServerErrors` Middleware in `src/middleware/error-handling.ts:5-24` fängt alle Fehler:
+Die `handleServerErrors` Middleware in [`src/middleware/error-handling.ts`](src/middleware/error-handling.ts) fängt alle Fehler:
 
 ```typescript
 export const handleServerErrors = createMiddleware({
@@ -95,7 +95,7 @@ der an das Frontend weitergereicht werden soll oder nicht, wird eine HTTP Antwor
 Klassen, die von `PublicError` erben, werden grundsätzlich transparent an das Frontend weitergereicht.
 
 Fehler, die durch die Zod Schema Validierung geworfen werden, werden ebenfalls durchgereicht.
-Dazu wird im Bootstrapping dieser Extension in der `src/start.ts` die Sprache auf Deutsch gestellt
+Dazu wird im Bootstrapping dieser Extension in der [`src/start.ts`](src/start.ts) die Sprache auf Deutsch gestellt
 
 ```typescript
 z.config(z.locales.de());
@@ -118,7 +118,7 @@ Alles Andere, insbesondere reguläre JavaScript `Errors` führen zu einem Status
 
 ### bei Forms
 
-React-Komponenten nutzen den `useFormErrorHandling` Hook in `src/hooks/useFormErrorHandling.tsx`:
+React-Komponenten nutzen den `useFormErrorHandling` Hook in [`src/hooks/useFormErrorHandling.tsx`](src/hooks/useFormErrorHandling.tsx):
 
 ```tsx
 const [RootError, submitWithErrorHandling] = useFormErrorHandling(

@@ -15,7 +15,7 @@ Mehr Informationen zum Authentifizierungskonzept von Frontend Fragmenten ist in 
 
 ### Implementierung
 
-Die Authentifizierung erfolgt über eine Middleware in `src/middleware/auth.ts`.
+Die Authentifizierung erfolgt über eine Middleware in [`src/middleware/auth.ts`](src/middleware/auth.ts).
 Somit muss in der Domänenlogik keine Rücksicht mehr auf die Authentifizierung genommen werden.
 Es kann davon ausgegangen werden, dass die Session verifiziert ist
 und bei Bedarf das Access Token oder ein authentifizierter API-Client verwendet werden.
@@ -78,7 +78,7 @@ export const getProjectOfExtensionInstanceServerFunction = createServerFn({
 Neben dem authentifizierten mittwaldClient und dem Access Token sind so auch die [Informationen aus dem Session Token](https://developer.mittwald.de/de/docs/v2/contribution/how-to/develop-frontend-fragment/#session-token-payload) zugänglich.
 In diesem Fall wird bspw. die `extensionInstanceId` verwendet, um automatisch eine Mandantenfähigkeit herzustellen.
 
-Die eigentliche API-Logik ist in `src/domain/project.ts` gekapselt:
+Die eigentliche API-Logik ist in [`src/domain/project.ts`](src/domain/project.ts) gekapselt:
 
 ```typescript
 export async function getProject(
@@ -105,7 +105,7 @@ export async function getProject(
 Für eine angenehme Nutzung im Frontend wird die Library [`@mittwald/react-ghostmaker`](https://github.com/mittwald/react-ghostmaker) verwendet.
 Diese ermöglicht es, Objekte und Klassen zu proxien und APIs anzubieten, die mit Tanstack-Query und react Suspense gut harmonieren.
 
-In `src/ghosts.ts` findet sich ein Beispiel für die Erstellung eines Ghosts:
+In [`src/ghosts.ts`](src/ghosts.ts) findet sich ein Beispiel für die Erstellung eines Ghosts:
 
 ```typescript
 const projectClient = {

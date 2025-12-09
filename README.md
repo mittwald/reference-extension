@@ -161,20 +161,20 @@ Um die Extension testen zu können, muss außerdem ein Projekt innerhalb deiner 
 
 ### Verantwortlichkeiten der Packages
 
-- **`src/components/`**: Enthält alle React-Komponenten, die im mStudio gerendert werden. Nutzt ausschließlich `@mittwald/flow-remote-react-components` für UI-Elemente.
+- **[`src/components/`](src/components)**: Enthält alle React-Komponenten, die im mStudio gerendert werden. Nutzt ausschließlich `@mittwald/flow-remote-react-components` für UI-Elemente.
 
-- **`src/db/`**: Datenbank-Layer mit Drizzle ORM. Definiert das Schema für Extension-Instanzen und Custom-Daten (Kommentare).
+- **[`src/db/`](src/db)**: Datenbank-Layer mit Drizzle ORM. Definiert das Schema für Extension-Instanzen und Custom-Daten (Kommentare).
 
-- **`src/domain/`**: Business-Logik ohne Framework-Abhängigkeiten. Enthält die API-Calls zur mittwald API und Daten-Transformationen.
+- **[`src/domain/`](src/domain)**: Business-Logik ohne Framework-Abhängigkeiten. Enthält die API-Calls zur mittwald API und Daten-Transformationen.
 
-- **`src/middleware/`**: TanStack Start Middleware für Cross-Cutting Concerns:
+- **[`src/middleware/`](src/middleware)**: TanStack Start Middleware für Cross-Cutting Concerns:
   - Authentifizierung
   - Fehlerbehandlung
   - Request-Validierung
 
-- **`src/routes/`**: File-based Routing mit TanStack Router. API-Routes unter `routes/api/`, UI-Routes direkt unter `routes/`.
+- **[`src/routes/`](src/routes)**: File-based Routing mit TanStack Router. API-Routes unter `routes/api/`, UI-Routes direkt unter `routes/`.
 
-- **`src/serverFunctions/`**: Server-seitige Funktionen, die vom Client aufgerufen werden können (ähnlich wie API Routes, aber mit Type Safety).
+- **[`src/serverFunctions/`](src/serverFunctions)**: Server-seitige Funktionen, die vom Client aufgerufen werden können (ähnlich wie API Routes, aber mit Type Safety).
 
 ## 📦 Implementierte Marktplatz-Mechanismen
 
@@ -189,7 +189,7 @@ Sie ermöglichen es der Extension, auf Änderungen zu reagieren, wie z.B. Instal
 
 **Implementierung in diesem Projekt:**
 
-Die Webhook-Handler befinden sich in `src/routes/api/webhooks.mittwald.ts:80-126`.
+Die Webhook-Handler befinden sich in [`src/routes/api/webhooks.mittwald.ts`](src/routes/api/webhooks.mittwald.ts).
 
 ```typescript
 // Vereinfachtes Beispiel
@@ -236,7 +236,7 @@ Die Extension liefert das JavaScript, das mStudio rendert die Komponenten, die d
 
 **Implementierung in diesem Projekt:**
 
-Die Haupt-UI-Route befindet sich in `src/routes/index.tsx` und rendert ein Dashboard mit verschiedenen Cards.
+Die Haupt-UI-Route befindet sich in [`src/routes/index.tsx`](src/routes/index.tsx) und rendert ein Dashboard mit verschiedenen Cards.
 Durch die Nutzung der `flow-remote-react-components` entfällt die Nutzung von kryptischen Custom HTML Elemente und fühlt sich an, wie normale React-Entwicklung.
 
 **Wichtige Konzepte:**

@@ -10,7 +10,7 @@ Manche Daten gehören nicht in das mStudio, sondern sind spezifisch für deine E
 ## Datenbank-Setup
 
 Die Extension nutzt eine [PostgreSQL Datenbank](https://www.postgresql.org/) und das [Drizzle ORM](https://orm.drizzle.team/).
-Das Schema ist in `src/db/schema.ts` definiert:
+Das Schema ist in [`src/db/schema.ts`](src/db/schema.ts) definiert:
 
 ```typescript
 // Extension Instances (aus Webhooks)
@@ -39,12 +39,11 @@ export const comments = pgTable("comments", {
 Schemas können auch auf mehrere Dateien aufgeteilt werden, müssen jedoch in einer zentralen Datei reexportiert werden,
 um in der `drizzle.config.ts` referenziert werden zu können.
 
-Diese Datei wird unter anderem für die package Skripte benötigt.
-Bspw. kann so eine webbasierte graphische Oberfläche mit dem Skript `pnpm db:studio` gestartet werden, um den Inhalt der Datenbank einzusehen oder das Schema auf die Datenbank angewandt werden.
+Diese Datei wird unter anderem für die package Skripte benötigt, wie bspw. das Starten des [Drizzle Studio](#drizzle-studio).
 
 ## Datenbank-Zugriff
 
-Der Drizzle Client wird in `src/db/index.ts` konfiguriert:
+Der Drizzle Client wird in [`src/db/index.ts`](src/db/index.ts) konfiguriert:
 
 ```typescript
 export const getDatabase = () => {
@@ -67,7 +66,7 @@ Die verwendeten Parameter stammen entweder aus Umgebungsvariablen oder der `.env
 
 ## CRUD-Operationen
 
-Beispiel: Kommentare abrufen (`src/domain/comments/comments.ts`):
+Beispiel: Kommentare abrufen ([`src/domain/comments/comments.ts`](src/domain/comments/comments.ts)):
 
 ```typescript
 export class DrizzleCommentStorage {
