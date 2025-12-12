@@ -11,4 +11,6 @@ export const getEnvironmentVariables = () =>
         EXTENSION_ID: str(),
         EXTENSION_SECRET: str(),
         ZROK_RESERVED_TOKEN: str(),
+        ENCRYPTION_MASTER_PASSWORD: str(),
+        ENCRYPTION_SALT: str(),
     });
