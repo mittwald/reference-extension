@@ -1,5 +1,5 @@
 {
-  "name": "@mittwald/hello-world-extension",
+  "name": "@mittwald/reference-extension",
   "type": "module",
   "version": "0.0.7",
   "packageManager": "pnpm@9.14.4",

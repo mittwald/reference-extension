@@ -3,9 +3,9 @@
 ## Hast du einen Bug gefunden?
 
 * **Eröffne kein öffentliches Github Issue für sicherheitsrelevante Bugs.**
-  Wenn du der Meinung bist, dass du eine Sicherheitslücke gefunden hast, [melde diese privat](https://github.com/mittwald/Hello-World-Extension/blob/master/SECURITY.md)
-* Stelle sicher, dass dein Bug noch nicht reported wurde, indem du [die Issues](https://github.com/mittwald/Hello-World-Extension/issues) durchsuchst.
-* Wenn der Bug noch nicht gemeldet wurde, [erstell ein neues Issue](https://github.com/mittwald/Hello-World-Extension/issues/new).
+  Wenn du der Meinung bist, dass du eine Sicherheitslücke gefunden hast, [melde diese privat](https://github.com/mittwald/reference-extension/blob/master/SECURITY.md)
+* Stelle sicher, dass dein Bug noch nicht reported wurde, indem du [die Issues](https://github.com/mittwald/reference-extension/issues) durchsuchst.
+* Wenn der Bug noch nicht gemeldet wurde, [erstell ein neues Issue](https://github.com/mittwald/reference-extension/issues/new).
 
 ## Hast du einen Patch für einen Bug?
 

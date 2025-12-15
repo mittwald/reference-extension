@@ -1,4 +1,4 @@
-# hello-world-extension
+# reference-extension
 
 ## 0.0.7
 

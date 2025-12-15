@@ -27,10 +27,10 @@ export const ReadmeCard = () => {
                 </Flex>
                 <Link
                     target="_blank"
-                    href="https://github.com/mittwald/Hello-World-Extension"
+                    href="https://github.com/mittwald/reference-extension"
                     color="dark"
                 >
-                    Hello World Extension
+                    Referenz Extension
                 </Link>
             </Flex>
         </AccentBox>

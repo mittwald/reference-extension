@@ -1,5 +1,5 @@
 ---
-"@mittwald/hello-world-extension": patch
+"@mittwald/reference-extension": patch
 ---
 
 added mittwald client instantiation to authentication middleware

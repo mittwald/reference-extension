@@ -1,4 +1,4 @@
-# Hello World Extension
+# Reference Extension
 
 Eine umfassende Beispiel-Extension für den mittwald mStudio Marketplace.
 Dieses Projekt richtet sich an Contributor, die ihre erste Extension entwickeln möchten
@@ -20,7 +20,7 @@ und einen vollständigen Überblick über die Konzepte, Mechanismen und Best Pra
 
 ## ✨ Überblick
 
-Diese Hello World Extension demonstriert die wichtigsten Funktionen einer mittwald Extension:
+Diese Referenz Extension demonstriert die wichtigsten Funktionen einer mittwald Extension:
 
 - **Lifecycle Webhooks**: Verwaltung von Extension-Instanzen über Webhook-Events
 - **Frontend Fragments**: Rendering von UI-Komponenten im mStudio
@@ -314,8 +314,8 @@ Als Bearer kann ein [API Token](https://developer.mittwald.de/de/docs/v2/api/int
 
 ```bash
 # Repository klonen
-git clone https://github.com/mittwald/Hello-World-Extension.git
-cd Hello-World-Extension
+git clone https://github.com/mittwald/reference-extension.git
+cd reference-extension
 
 # Dependencies installieren
 pnpm install
@@ -688,7 +688,7 @@ pnpm run db:push
 Falls du nicht weiterkommst:
 
 1. **Dokumentation durchsuchen**: [developer.mittwald.de](https://developer.mittwald.de/de/docs/v2/contribution/)
-2. **GitHub Issues**: Prüfe die [Issues](https://github.com/mittwald/Hello-World-Extension/issues) dieses Repositories
+2. **GitHub Issues**: Prüfe die [Issues](https://github.com/mittwald/reference-extension/issues) dieses Repositories
 3. **mittwald Support**: Kontaktiere den mittwald Support für Account-bezogene Probleme
 
 ## ✅ Was kann mit diesem Extension-Template umgesetzt werden?
@@ -757,7 +757,7 @@ Mit dieser Template könntest du beispielsweise folgende Extensions bauen:
 
 ### Support
 
-- **GitHub Issues**: [github.com/mittwald/Hello-World-Extension/issues](https://github.com/mittwald/Hello-World-Extension/issues)
+- **GitHub Issues**: [github.com/mittwald/reference-extension/issues](https://github.com/mittwald/reference-extension/issues)
 - **mittwald Support**: support@mittwald.de
 
 ---

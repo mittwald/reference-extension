@@ -1,8 +1,8 @@
-# Hello-World-Extension security policy
+# reference-extension security policy
 
 ## Reporting a vulnerability
 
-If you believe you have found a security vulnerability in this GitHub Action, please [report it privately](https://github.com/mittwald/Hello-World-Extension/security/advisories/new). Alternatively, please reach out via email to security@mittwald.de instead of opening a public issue.
+If you believe you have found a security vulnerability in this GitHub Action, please [report it privately](https://github.com/mittwald/reference-extension/security/advisories/new). Alternatively, please reach out via email to security@mittwald.de instead of opening a public issue.
 
 Please do not disclose the vulnerability until we have had a
 chance to address it.
