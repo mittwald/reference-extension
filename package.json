@@ -28,7 +28,9 @@
     "docker:prod": "docker compose up",
     "docker:prod:build": "docker compose up --build",
     "docker:prod:down": "docker compose down",
-    "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish"
+    "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish",
+    "cleanup:all": "./cleanup.sh -- all",
+    "cleanup:webhook": "./cleanup.sh -- rmDbRelation rmWebhooks"
   },
   "dependencies": {
     "@mittwald/api-client": "^4.267.0",
