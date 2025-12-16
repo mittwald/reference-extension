@@ -4,6 +4,12 @@
 
 ### Major Changes
 
+- 54013bb: do first release
+
+## 1.0.0
+
+### Major Changes
+
 - 1dc7b8f: first release
 
 ### Patch Changes
