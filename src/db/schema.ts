@@ -1,23 +1,21 @@
-import {text, timestamp, varchar} from "drizzle-orm/pg-core";
-import {pgTable} from "drizzle-orm/pg-core/table";
-import {getEnvironmentVariables} from "@/env.ts";
-import {
-    buildExtensionInstanceTable
-} from "@weissaufschwarz/mitthooks-drizzle/schema";
 import {
     buildEncryptedTextColumn,
-    buildEncryptionKey
+    buildEncryptionKey,
 } from "@weissaufschwarz/mitthooks-drizzle/encryption";
+import { buildExtensionInstanceTable } from "@weissaufschwarz/mitthooks-drizzle/schema";
+import { text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core/table";
+import { getEnvironmentVariables } from "@/env.ts";
 
 const env = getEnvironmentVariables();
 
-export { context } from "@weissaufschwarz/mitthooks-drizzle/schema"
+export { context } from "@weissaufschwarz/mitthooks-drizzle/schema";
 
 export const extensionInstances = buildExtensionInstanceTable(
-        buildEncryptedTextColumn(
-            buildEncryptionKey(env.ENCRYPTION_MASTER_PASSWORD, env.ENCRYPTION_SALT),
-        ),
-)
+    buildEncryptedTextColumn(
+        buildEncryptionKey(env.ENCRYPTION_MASTER_PASSWORD, env.ENCRYPTION_SALT),
+    ),
+);
 
 export const comments = pgTable("comments", {
     id: varchar({ length: 36 }).primaryKey(),
