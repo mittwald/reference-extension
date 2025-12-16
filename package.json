@@ -1,11 +1,8 @@
 {
   "name": "@mittwald/reference-extension",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "packageManager": "pnpm@9.14.4",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "scripts": {
     "dev": "vite dev --host --port 3000",
     "dev:expose": "dotenv -- bash -c 'sudo zrok share reserved $ZROK_RESERVED_TOKEN'",
@@ -27,8 +24,7 @@
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:prod": "docker compose up",
     "docker:prod:build": "docker compose up --build",
-    "docker:prod:down": "docker compose down",
-    "publish-package": "pnpm run build && pnpm run check && changeset version && changeset publish"
+    "docker:prod:down": "docker compose down"
   },
   "dependencies": {
     "@mittwald/api-client": "^4.267.0",
