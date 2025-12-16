@@ -1,5 +1,23 @@
 # reference-extension
 
+## 1.0.0
+
+### Major Changes
+
+- 1dc7b8f: first release
+
+### Patch Changes
+
+- c10d193: added mittwald client instantiation to authentication middleware
+- a5ed5dc: added comment system to demonstrate non-mStudio data handling
+- 1baaaa0: implemented get-project and edit-project-description server functions as well as a minimalistic frontend to demonstrate them
+- 6f564c8: implemented middlewares to verify session token and gain access tokens from it
+- fbe529c: implemented better error handling for server functions
+- 68786a6: refactored to use mitthooks and mitthooks-drizzle for webhook bootstrapping and extension storage
+- de6005a: set up drizzle and added an example schema for extension instances
+- bc91efd: developed a fancier frontend to show off some usage of flow components
+- 7c8ea49: added webhook implementation and documentation how to test webhooks locally
+
 ## 0.0.7
 
 ### Patch Changes
