@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "packageManager": "pnpm@9.14.4",
   "scripts": {
+    "init:encryption": "node scripts/generate-encryption-secrets.js",
     "dev": "vite dev --host --port 3000",
     "dev:expose": "dotenv -- bash -c 'sudo zrok share reserved $ZROK_RESERVED_TOKEN'",
     "build": "vite build",
