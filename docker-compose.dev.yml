@@ -5,10 +5,11 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/tanstack_dev
-      - VITE_HMR_HOST=localhost
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
     volumes:
       # Mount source code for hot reload
       - ./src:/app/src
@@ -27,10 +28,8 @@ services:
 
   db:
     image: postgres:16-alpine
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=tanstack_dev
+    env_file:
+      - .env
     ports:
       - "5433:5432"
     volumes:
