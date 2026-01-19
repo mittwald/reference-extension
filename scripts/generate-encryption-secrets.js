@@ -13,7 +13,6 @@ if (!fs.existsSync(envPath)) {
 
 const envContent = fs.readFileSync(envPath, "utf8");
 
-// Zufällige Werte erzeugen
 const masterPassword = crypto.randomBytes(32).toString("base64");
 const salt = crypto.randomBytes(32).toString("hex");
 

@@ -355,7 +355,7 @@ Das `ENCRYPTION_MASTER_PASSWORD` und der `ENCRYPTION_SALT` werden benötigt, um 
 Diese können über das folgende Package Script erzeugt werden.
 
 ```bash
-pnpm init:encryption
+pnpm run init:encryption
 ```
 
 ### Schritt 4: Datenbank starten
