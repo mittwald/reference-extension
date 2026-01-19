@@ -346,7 +346,16 @@ PORT=3000
 # Extension
 EXTENSION_ID=your_extension_id_here          # Aus dem mStudio in der Extension Verwaltung
 EXTENSION_SECRET=your_extension_secret_here  # Generiert über mittwald API
+ENCRYPTION_MASTER_PASSWORD=changeme          # Für die Verschlüsselung der Extension Instance Secrets, wird im Folgenden erläutert
+ENCRYPTION_SALT=changeme                     # Für die Verschlüsselung der Extension Instance Secrets, wird im Folgenden erläutert
 ZROK_RESERVED_TOKEN=your_reserved_token_here # Für Webhooks, wird im Folgenden erläutert
+```
+
+Das `ENCRYPTION_MASTER_PASSWORD` und der `ENCRYPTION_SALT` werden benötigt, um einen Key für die Verschlüsselung abzuleiten.
+Diese können über das folgende Package Script erzeugt werden.
+
+```bash
+pnpm run init:encryption
 ```
 
 ### Schritt 4: Datenbank starten
