@@ -1,0 +1,30 @@
+services:
+  app:
+    image: "{{ .Env.IMAGE_TAG }}"
+    description: "Reference Extension"
+    ports:
+      - "3000/tcp"
+    environment:
+      NODE_ENV: production
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "{{ .Env.POSTGRES_USER }}"
+      POSTGRES_PASSWORD: "{{ .Env.POSTGRES_PASSWORD }}"
+      POSTGRES_DB: "{{ .Env.POSTGRES_DB }}"
+      ENCRYPTION_MASTER_PASSWORD: "{{ .Env.ENCRYPTION_MASTER_PASSWORD }}"
+      ENCRYPTION_SALT: "{{ .Env.ENCRYPTION_SALT }}"
+      EXTENSION_SECRET: "{{ .Env.EXTENSION_SECRET }}"
+      EXTENSION_ID: "{{ .Env.EXTENSION_ID }}"
+
+  db:
+    image: "postgres:16-alpine"
+    description: "PostgreSQL Database"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "{{ .Env.POSTGRES_USER }}"
+      POSTGRES_PASSWORD: "{{ .Env.POSTGRES_PASSWORD }}"
+      POSTGRES_DB: "{{ .Env.POSTGRES_DB }}"
+
+volumes:
+  postgres-data: {}
