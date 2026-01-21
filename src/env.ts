@@ -13,4 +13,5 @@ export const getEnvironmentVariables = () =>
         ZROK_RESERVED_TOKEN: str(),
         ENCRYPTION_MASTER_PASSWORD: str(),
         ENCRYPTION_SALT: str(),
+        RUN_MIGRATIONS_ON_STARTUP: bool({ default: true }),
     });

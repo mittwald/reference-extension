@@ -1,5 +1,5 @@
 import { defineConfig } from "drizzle-kit";
-import { getEnvironmentVariables } from "@/env.ts";
+import { getEnvironmentVariables } from "./src/env";
 
 const env = getEnvironmentVariables();
 
