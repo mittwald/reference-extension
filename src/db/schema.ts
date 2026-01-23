@@ -5,7 +5,7 @@ import {
 import { buildExtensionInstanceTable } from "@weissaufschwarz/mitthooks-drizzle/schema";
 import { text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { pgTable } from "drizzle-orm/pg-core/table";
-import { getEnvironmentVariables } from "@/env.ts";
+import { getEnvironmentVariables } from "../env";
 
 const env = getEnvironmentVariables();
 

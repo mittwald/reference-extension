@@ -18,7 +18,8 @@ const config = defineConfig({
             preset: "node-server",
             externals: {
                 exportConditions: ["node", "import", "module", "default"]
-            }
+            },
+            scanDirs: ["src/server"],
         }),
         react(),
     ],

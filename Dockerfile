@@ -30,6 +30,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 tanstack
 
 COPY --from=builder --chown=tanstack:nodejs /app/.output ./
+COPY --from=builder --chown=tanstack:nodejs /app/drizzle ./drizzle
 
 USER tanstack
 

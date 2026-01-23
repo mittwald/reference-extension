@@ -372,12 +372,7 @@ pnpm run docker:dev db -d
 
 Die Datenbank ist nun erreichbar unter `localhost:5433`.
 
-**Datenbankschema initialisieren:**
-
-```bash
-# Datenbank Schema auf die Datenbank anwenden
-pnpm run db:push
-```
+**Hinweis:** Das Datenbankschema wird automatisch beim Start der Applikation angewendet (siehe [Datenbank-Migrationen](#datenbank)).
 
 ### Schritt 5: Development Server starten
 
@@ -555,14 +550,22 @@ pnpm run check:fix
 
 ### Datenbank
 
-```bash
-# Schema-Änderungen direkt in die DB pushen und bei Konflikten ggf. überschreiben (Entwicklung)
-pnpm run db:push
+**Automatische Migrationen:** Die Applikation führt beim Start automatisch alle ausstehenden Datenbank-Migrationen aus. Dieses Verhalten kann über die Umgebungsvariable `RUN_MIGRATIONS_ON_STARTUP=false` deaktiviert werden.
 
-# Migrationen aus Schema-Änderungen generieren
+**Workflow bei Schema-Änderungen:**
+
+1. Schema in `src/db/schema.ts` anpassen
+2. Migration generieren: `pnpm run db:generate-migrations`
+3. Applikation neu starten - Migration wird automatisch angewendet
+
+```bash
+# Migrationen aus Schema-Änderungen generieren (nach jeder Schema-Änderung erforderlich!)
 pnpm run db:generate-migrations
 
-# Migrationen auf Datenbank anwenden
+# Schema-Änderungen direkt in die DB pushen (nur für schnelles Prototyping, überschreibt ggf. Daten)
+pnpm run db:push
+
+# Migrationen manuell auf Datenbank anwenden
 pnpm run db:migrate
 
 # Drizzle Studio öffnen (Web-UI für Datenbank)
