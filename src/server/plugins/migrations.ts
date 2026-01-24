@@ -14,6 +14,7 @@ export default definePlugin(async () => {
 
     if (!result.success) {
         console.error("[migrations] Database migrations failed - stopping server");
-        throw result.error;
+        console.error(result.error);
+        process.exit(1);
     }
 });
