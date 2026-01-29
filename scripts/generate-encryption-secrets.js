@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import crypto from "crypto";
-import path from "path";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 
 const envPath = path.resolve(process.cwd(), ".env");
 
@@ -40,13 +40,9 @@ let updatedEnv = envContent;
 updatedEnv = replaceIfChangeMe(
     updatedEnv,
     "ENCRYPTION_MASTER_PASSWORD",
-    masterPassword
+    masterPassword,
 );
-updatedEnv = replaceIfChangeMe(
-    updatedEnv,
-    "ENCRYPTION_SALT",
-    salt
-);
+updatedEnv = replaceIfChangeMe(updatedEnv, "ENCRYPTION_SALT", salt);
 
 fs.writeFileSync(envPath, updatedEnv, "utf8");
 

@@ -1,8 +1,8 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
+import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
-import { nitro } from "nitro/vite";
 
 const config = defineConfig({
     server: {
@@ -17,7 +17,7 @@ const config = defineConfig({
         nitro({
             preset: "node-server",
             externals: {
-                exportConditions: ["node", "import", "module", "default"]
+                exportConditions: ["node", "import", "module", "default"],
             },
             scanDirs: ["src/server"],
         }),

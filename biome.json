@@ -9,6 +9,7 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
+      "!!drizzle",
       "!!**/node_modules",
       "!!**/dist",
       "!!**/.output",
