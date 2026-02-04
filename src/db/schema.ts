@@ -2,10 +2,12 @@ import {
     buildEncryptedTextColumn,
     buildEncryptionKey,
 } from "@weissaufschwarz/mitthooks-drizzle/encryption";
-import { buildExtensionInstanceTable } from "@weissaufschwarz/mitthooks-drizzle/schema";
-import { text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { pgTable } from "drizzle-orm/pg-core/table";
-import { getEnvironmentVariables } from "../env";
+import {
+    buildExtensionInstanceTable
+} from "@weissaufschwarz/mitthooks-drizzle/schema";
+import {text, timestamp, varchar} from "drizzle-orm/pg-core";
+import {pgTable} from "drizzle-orm/pg-core/table";
+import {getEnvironmentVariables} from "../env";
 
 const env = getEnvironmentVariables();
 
@@ -21,7 +23,7 @@ export const comments = pgTable("comments", {
     id: varchar({ length: 36 }).primaryKey(),
     extensionInstanceId: varchar({ length: 36 })
         .notNull()
-        .references(() => extensionInstances.id),
+        .references(() => extensionInstances.id, { onDelete: "cascade" }),
     userId: varchar({ length: 36 }).notNull(),
     text: text().notNull(),
     createdAt: timestamp().defaultNow().notNull(),
