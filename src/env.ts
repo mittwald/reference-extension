@@ -2,6 +2,7 @@ import { bool, cleanEnv, num, str } from "envalid";
 
 export const getEnvironmentVariables = () =>
     cleanEnv(process.env, {
+        PORT: num({ default: 3000 }),
         POSTGRES_USER: str(),
         POSTGRES_PASSWORD: str(),
         POSTGRES_DB: str(),

@@ -3,11 +3,14 @@ import react from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
+import { getEnvironmentVariables } from "./src/env";
+
+const env = getEnvironmentVariables();
 
 const config = defineConfig({
     server: {
         allowedHosts: true,
-        port: 3000,
+        port: env.PORT,
     },
     plugins: [
         tsConfigPaths({
