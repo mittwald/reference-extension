@@ -6,7 +6,7 @@
   "scripts": {
     "init:encryption": "node scripts/generate-encryption-secrets.js",
     "dev": "dotenv -- vite dev --host",
-    "dev:expose": "dotenv -- bash -c 'sudo zrok share reserved $ZROK_RESERVED_TOKEN'",
+    "dev:expose": "dotenv -- bash -c 'zrok share reserved $ZROK_RESERVED_TOKEN'",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
