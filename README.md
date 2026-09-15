@@ -360,7 +360,9 @@ pnpm run init:encryption
 
 ### Schritt 4: Datenbank starten
 
-Die Extension benötigt eine PostgreSQL-Datenbank. Nutze Docker Compose für einfaches Setup:
+Die folgenden Schritte beschreiben die lokale Entwicklung: Die App läuft mit `pnpm run dev` auf deinem Rechner, PostgreSQL läuft in Docker. Deshalb verbindet sich die App über `localhost:5433` mit der Datenbank.
+
+`docker-compose.dev.yml` enthält zusätzlich einen vollständig containerisierten Entwicklungsmodus. Für die lokale Entwicklung wird daraus jedoch nur der Service `db` gestartet:
 
 ```bash
 # PostgreSQL als Docker Container starten
@@ -371,6 +373,8 @@ pnpm run docker:dev db -d
 ```
 
 Die Datenbank ist nun erreichbar unter `localhost:5433`.
+
+Wenn du die gesamte Extension in Docker starten möchtest, verwende stattdessen `pnpm run docker:dev`. In diesem Modus läuft auch die App im Docker-Netzwerk und verbindet sich intern über `db:5432` mit PostgreSQL.
 
 **Hinweis:** Das Datenbankschema wird automatisch beim Start der Applikation angewendet (siehe [Datenbank-Migrationen](#datenbank)).
 
