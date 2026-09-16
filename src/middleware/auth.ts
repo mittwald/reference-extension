@@ -47,7 +47,19 @@ export const authenticationMiddlewareWithSessionVerification = createMiddleware(
         }
     })
     .server(async ({ next }) => {
-        const [verifiedSessionToken] = await getVerifiedSessionToken();
+        const env = getEnvironmentVariables();
+
+        let verifiedSessionToken;
+        let something;
+        if (env.MITTWALD_API_BASE_URL) {
+            verifiedSessionToken = {
+                contextId: "MOCK_CONTEXT_ID",
+                extensionInstanceId: "MOCK_EXTENSION_INSTANCE_ID",
+                userId: "MOCK_USER_ID",
+            };
+        } else {
+            [verifiedSessionToken, something] = await getVerifiedSessionToken();
+        }
         return next({
             context: {
                 contextId: verifiedSessionToken.contextId,
