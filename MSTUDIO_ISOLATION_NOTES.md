@@ -51,8 +51,8 @@
 
 ### Open questions / next steps
 - [X] Decide on env var / config mechanism for API base URL override. **ANSWER:** Add "MITTWALD_API_BASE_URL" environment variable, wire it into client construction.
-- [ ] Investigate `@weissaufschwarz/mitthooks` for mockable verification hooks
-- [ ] Decide whether webhook mocking happens at lib level (preferred) or via route-level wrapper (fallback)
+- [X] Investigate `@weissaufschwarz/mitthooks` for mockable verification hooks. **ANSWER:** Do not touch. Implementation does not support documented dryrun at all, yet we can simply use it as-is for our purposes
+- [X] Decide whether webhook mocking happens at lib level (preferred) or via route-level wrapper (fallback) **ANSWER:** Done. Mock API URL triggers webhook verification deactivation.
 
 # Snippets / More notes
 
@@ -79,3 +79,20 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 ```
+
+**Attention!** No need to run sql manually, better call mock webhook scripts in `scripts/` folder:
+
+- scripts/mock-extension-installation-webhook.sh
+- scripts/mock-extension-uninstallation-webhook.sh
+
+# Breakthrough: local mStudio isolation mode
+
+We can now run the extension without live mStudio bindings:
+
+- mock browser session token forwarding
+- mock verified session identity
+- mock API base URL via `MITTWALD_API_BASE_URL`
+- lifecycle webhooks for install/uninstall via local curl scripts
+- canonical extension instance persistence through the real webhook handler
+
+Result: the extension can be exercised locally without running against prod.
