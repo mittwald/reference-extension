@@ -13,6 +13,17 @@ const config = defineConfig(({ mode }) => {
                 env.MITTWALD_API_BASE_URL,
             ),
         },
+        resolve: {
+            dedupe: [
+                "@mittwald/flow-react-components",
+                "@mittwald/flow-remote-core",
+                "@mittwald/flow-remote-elements",
+                "@mittwald/flow-remote-react-components",
+                "@mittwald/remote-dom-react",
+                "react",
+                "react-dom",
+            ],
+        },
         server: {
             allowedHosts: true,
             port: env.PORT ? Number.parseInt(env.PORT, 10) : 3000,
