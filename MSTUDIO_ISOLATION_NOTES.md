@@ -53,3 +53,29 @@
 - [X] Decide on env var / config mechanism for API base URL override. **ANSWER:** Add "MITTWALD_API_BASE_URL" environment variable, wire it into client construction.
 - [ ] Investigate `@weissaufschwarz/mitthooks` for mockable verification hooks
 - [ ] Decide whether webhook mocking happens at lib level (preferred) or via route-level wrapper (fallback)
+
+# Snippets / More notes
+
+Manually seed database with mock extension instance:
+
+```sql
+INSERT INTO extension_instance (
+    id,
+    "contextId",
+    context,
+    active,
+    variant_key,
+    consented_scopes,
+    secret
+)
+VALUES (
+    'MOCK_EXTENSION_INSTANCE_ID',
+    'MOCK_CONTEXT_ID',
+    'project',
+    true,
+    NULL,
+    ARRAY[]::text[],
+    NULL
+)
+ON CONFLICT (id) DO NOTHING;
+```
