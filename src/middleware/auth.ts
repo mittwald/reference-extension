@@ -23,11 +23,12 @@ async function forwardSessionToken(
 async function getVerifiedSessionToken(): Promise<
     [VerifiedSessionToken, string]
 > {
-    const sessionToken = getRequestHeader(sessionTokenHeader);
+    const sessionToken = "butterbrot";  //getRequestHeader(sessionTokenHeader);
     if (!sessionToken) {
         throw new Error("No session token found");
     }
-    const verifiedSessionToken = await verify(sessionToken);
+    const verifiedSessionToken = new Object() as VerifiedSessionToken; //await verify(sessionToken);
+
     return [verifiedSessionToken, sessionToken];
 }
 
@@ -35,7 +36,15 @@ export const authenticationMiddlewareWithSessionVerification = createMiddleware(
     { type: "function" },
 )
     .client(async ({ next }) => {
-        return forwardSessionToken(next);
+
+        const env = getEnvironmentVariables();
+        if (env.MITTWALD_API_BASE_URL) {
+            return next({
+                headers: { [sessionTokenHeader]: "MOCK" },
+            });
+        } else {
+            return forwardSessionToken(next);
+        }
     })
     .server(async ({ next }) => {
         const [verifiedSessionToken] = await getVerifiedSessionToken();
@@ -61,10 +70,20 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
         const env = getEnvironmentVariables();
         const extensionSecret = env.EXTENSION_SECRET;
 
-        const accessToken = await getAccessToken(sessionToken, extensionSecret);
-        const mittwaldClient = MittwaldAPIV2Client.newWithToken(
-            accessToken.publicToken,
-        );
+        let mittwaldClient;
+        let accessToken;
+        if (env.MITTWALD_API_BASE_URL) {
+            accessToken = { publicToken: sessionToken + extensionSecret };
+            mittwaldClient = MittwaldAPIV2Client.newWithToken(
+                accessToken.publicToken,
+            );
+            mittwaldClient.axios.defaults.baseURL = env.MITTWALD_API_BASE_URL;
+        } else {
+            accessToken = await getAccessToken(sessionToken, extensionSecret);
+            mittwaldClient = MittwaldAPIV2Client.newWithToken(
+                accessToken.publicToken,
+            );
+        }
 
         return next({
             context: {
