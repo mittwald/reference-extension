@@ -8,6 +8,8 @@ const config = defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), "");
 
     return {
+        // keep out of the anonymous node_modules volume, see Dockerfile.dev
+        cacheDir: env.VITE_CACHE_DIR || undefined,
         define: {
             "import.meta.env.MITTWALD_API_BASE_URL": JSON.stringify(
                 env.MITTWALD_API_BASE_URL,
@@ -23,6 +25,10 @@ const config = defineConfig(({ mode }) => {
                 "react",
                 "react-dom",
             ],
+        },
+        optimizeDeps: {
+            // "./node" export condition breaks the esbuild dep scanner when reached from client entries
+            exclude: ["@mittwald/ext-bridge"],
         },
         server: {
             allowedHosts: true,

@@ -12,5 +12,12 @@ RUN pnpm install --frozen-lockfile
 # Expose dev server port
 EXPOSE 3000
 
-# Start dev server with hot reload
-CMD ["pnpm", "run", "dev"]
+# node_modules is preserved via an anonymous docker volume across restarts, but
+# its optimized deps cache is not - keep it in the container's writable layer
+# (not the bind-mounted host tree) so stale/half-written chunks from a previous
+# run never get served, which manifested as NS_ERROR_CORRUPTED_CONTENT in the browser
+ENV VITE_CACHE_DIR=/tmp/vite-cache
+
+# Start dev server with hot reload, dropping any stale deps cache from a
+# previous container run of this same anonymous node_modules volume first
+CMD ["sh", "-c", "rm -rf \"$VITE_CACHE_DIR\" node_modules/.vite && exec pnpm run dev"]
