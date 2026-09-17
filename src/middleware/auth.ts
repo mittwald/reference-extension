@@ -63,8 +63,8 @@ async function getVerifiedSessionToken(): Promise<
     if (!sessionToken) {
         throw new Error("No session token found");
     }
-    // @vite-ignore: hides this from esbuild's dep-scan, which otherwise still statically resolves import() specifiers
-    const { verify } = await import(/* @vite-ignore */ "@mittwald/ext-bridge/node");
+    // node-only export condition, see optimizeDeps.exclude in vite.config.ts
+    const { verify } = await import("@mittwald/ext-bridge/node");
     const verifiedSessionToken = await verify(sessionToken);
 
     return [verifiedSessionToken, sessionToken];
@@ -106,8 +106,10 @@ export const authenticationMiddlewareWithAccessToken = createMiddleware({
             );
             mittwaldClient.axios.defaults.baseURL = env.MITTWALD_API_BASE_URL;
         } else {
-            // @vite-ignore: hides this from esbuild's dep-scan, same reason as above
-            const { getAccessToken } = await import(/* @vite-ignore */ "@mittwald/ext-bridge/node");
+            // node-only export condition, see optimizeDeps.exclude in vite.config.ts
+            const { getAccessToken } = await import(
+                "@mittwald/ext-bridge/node"
+            );
             accessToken = await getAccessToken(sessionToken, extensionSecret);
             mittwaldClient = MittwaldAPIV2Client.newWithToken(
                 accessToken.publicToken,
