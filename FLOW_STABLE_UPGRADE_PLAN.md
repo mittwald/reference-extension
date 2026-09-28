@@ -256,15 +256,15 @@ Repo: `reference-extension`
 
 ### Stage D — Productive mStudio
 
-- [ ] Only once Stage C is green.
-- [ ] Run the upgraded extension against productive mStudio.
-- [ ] Smoke test (see §6.1).
-- [ ] Webhook scripts in `scripts/` still pass.
+- [X] Only once Stage C is green.
+- [X] Run the upgraded extension against productive mStudio.
+- [X] Smoke test (see §6.1).
+- [X] Webhook scripts in `scripts/` still pass.
 
 ### Stage E — Land
 
-- [ ] Changeset entry in `reference-extension`.
-- [ ] Commit both repos.
+- [X] Changeset entry in `reference-extension`.
+- [X] Commit both repos.
 - [ ] Hand the §4 findings to Stage F.
 
 ### Stage F — Bonus: upstream fix proposal (optional, not blocking)
