@@ -213,32 +213,36 @@ The previously-High "mock host may not speak v5" risk is **retired**: we control
 
 Repo: `mittwald-extension-mock-host`
 
-- [ ] Create a branch off `master`.
-- [ ] Bump to exact `1.3.5`: `flow-react-components`, `flow-remote-core`, `flow-remote-react-components` (or drop it if genuinely unused), `flow-remote-react-renderer`.
-- [ ] Clean install (`npm ci` / `rm -rf node_modules package-lock.json && npm install`), clear `node_modules/.vite`.
-- [ ] Confirm a single resolved `@mittwald/ext-bridge@1.3.5` in the lockfile.
-- [ ] `npm run lint` and `npm run build` pass.
-- [ ] Fix any `RemoteRenderer` / `RemoteReceiver` import or prop fallout (expected: none — see §5).
+- [X] Create a branch off `master`. -> `upgrade/stable-flow`
+- [X] Bump to exact `1.3.5`: `flow-react-components`, `flow-remote-core`, `flow-remote-react-components` (or drop it if genuinely unused), `flow-remote-react-renderer`.
+- [X] Clean install (`npm ci` / `rm -rf node_modules package-lock.json && npm install`), clear `node_modules/.vite`.
+- [X] Confirm a single resolved `@mittwald/ext-bridge@1.3.5` in the lockfile.
+- [X] `npm run lint` and `npm run build` pass.
+- [X] Fix any `RemoteRenderer` / `RemoteReceiver` import or prop fallout (expected: none — see §5). -> None found as expected.
 
 ### Stage B — Upgraded host × **unchanged** extension
 
 **This is the backward-compatibility gate. The extension is not touched in this stage.**
 
-- [ ] Extension still at `0.2.0-alpha.557` + the `__root.tsx` ext-bridge fix, i.e. the current checkpoint commit.
-- [ ] Run upgraded mock host against it.
-- [ ] Smoke test (see §6.1).
-- [ ] Expected: **works**. `normalizeReadyEvent` accepts the bare `Version.v3` number and v5-only features stay gated.
-- [ ] If it fails → the problem is entirely in the mock host bump. Fix there before going further. Do **not** start Stage C.
+- [X] Extension still at `0.2.0-alpha.557` + the `__root.tsx` ext-bridge fix, i.e. the current checkpoint commit.
+- [X] Run upgraded mock host against it.
+- [X] Smoke test (see §6.1).
+- [X] Expected: **works**. `normalizeReadyEvent` accepts the bare `Version.v3` number and v5-only features stay gated.
+- [X] If it fails → the problem is entirely in the mock host bump. Fix there before going further. Do **not** start Stage C. -> no fails, everything fine
+
+Finding: Error behavior is slightly worse in this combination, i do not
+get error message when post comment with non-existant mock extension instance.
+This might be an issue of host- and frontend-fragment version mismatch now.
 
 ### Stage C — Bump the extension, run against the upgraded host
 
 Repo: `reference-extension`
 
-- [ ] Set all six `@mittwald/*` Flow packages to exact `1.3.5` in `package.json`:
+- [X] Set all six `@mittwald/*` Flow packages to exact `1.3.5` in `package.json`:
       `ext-bridge`, `flow-react-components`, `flow-remote-core`, `flow-remote-elements`, `flow-remote-react-components`, `mstudio-ext-react-components`.
-- [ ] Leave `@mittwald/remote-dom-react` at `1.2.2-mittwald.10`.
-- [ ] Clean install: remove `node_modules`, the Vite cache dir (`VITE_CACHE_DIR` / `node_modules/.vite`), then `pnpm install`.
-- [ ] Verify a single resolved copy of `@mittwald/ext-bridge` in `pnpm-lock.yaml`.
+- [X] Leave `@mittwald/remote-dom-react` at `1.2.2-mittwald.10`.
+- [X] Clean install: remove `node_modules`, the Vite cache dir (`VITE_CACHE_DIR` / `node_modules/.vite`), then `pnpm install`.
+- [X] Verify a single resolved copy of `@mittwald/ext-bridge` in `pnpm-lock.yaml`.
 - [ ] Replace the side-effect import in `src/routes/__root.tsx` with the explicit stable API:
       `import { initExtBridge } from "@mittwald/ext-bridge/browser";` + call `initExtBridge()` at module scope, before any render.
 - [ ] Re-check `src/middleware/auth.ts` (`getSessionToken` from `@mittwald/ext-bridge/browser`, `verify` from `@mittwald/ext-bridge/node`) still resolves.
