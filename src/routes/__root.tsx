@@ -1,3 +1,6 @@
+// must be evaluated before RemoteRoot connects, otherwise globalThis.mwExtBridge
+// is still undefined and flow-remote-core silently skips readiness.setIsReady()
+import "@mittwald/ext-bridge/browser";
 import { LayoutCard } from "@mittwald/flow-remote-react-components";
 import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
