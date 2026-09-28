@@ -243,16 +243,16 @@ Repo: `reference-extension`
 - [X] Leave `@mittwald/remote-dom-react` at `1.2.2-mittwald.10`.
 - [X] Clean install: remove `node_modules`, the Vite cache dir (`VITE_CACHE_DIR` / `node_modules/.vite`), then `pnpm install`.
 - [X] Verify a single resolved copy of `@mittwald/ext-bridge` in `pnpm-lock.yaml`.
-- [ ] Replace the side-effect import in `src/routes/__root.tsx` with the explicit stable API:
+- [X] Replace the side-effect import in `src/routes/__root.tsx` with the explicit stable API:
       `import { initExtBridge } from "@mittwald/ext-bridge/browser";` + call `initExtBridge()` at module scope, before any render.
-- [ ] Re-check `src/middleware/auth.ts` (`getSessionToken` from `@mittwald/ext-bridge/browser`, `verify` from `@mittwald/ext-bridge/node`) still resolves.
-- [ ] Review `vite.config.ts`: `optimizeDeps.exclude: ["@mittwald/ext-bridge"]` (added because the `./node` export condition breaks the esbuild dep scanner) — confirm still needed with the 1.3.5 exports map.
-- [ ] Keep / update `resolve.dedupe` list.
-- [ ] `npx tsc --noEmit` clean; fix renamed components or props.
-- [ ] Biome clean.
-- [ ] Production build succeeds.
-- [ ] Smoke test against the **upgraded mock host** (see §6.1).
-- [ ] Expected: works, now on protocol v5 end to end.
+- [X] Re-check `src/middleware/auth.ts` (`getSessionToken` from `@mittwald/ext-bridge/browser`, `verify` from `@mittwald/ext-bridge/node`) still resolves.
+- [X] Review `vite.config.ts`: `optimizeDeps.exclude: ["@mittwald/ext-bridge"]` (added because the `./node` export condition breaks the esbuild dep scanner) — confirm still needed with the 1.3.5 exports map.
+- [X] Keep / update `resolve.dedupe` list.
+- [X] `npx tsc --noEmit` clean; fix renamed components or props.
+- [X] Biome clean.
+- [X] Production build succeeds.
+- [X] Smoke test against the **upgraded mock host** (see §6.1).
+- [X] Expected: works, now on protocol v5 end to end.
 
 ### Stage D — Productive mStudio
 

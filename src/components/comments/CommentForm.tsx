@@ -66,7 +66,7 @@ export const CommentForm = () => {
 
                 <ActionGroup>
                     <Flex justify="end" gap="m" direction="row-reverse">
-                        <Action action={resetComments}>
+                        <Action onAction={resetComments}>
                             <Button variant="soft" color="secondary">
                                 Kommentare aufräumen
                             </Button>
