@@ -3,6 +3,7 @@
 **Date:** 2026-09-28
 **Branch:** `lb/fresh-ref-hunt-deletion-bug`
 **Goal:** Move the reference extension off the abandoned `0.2.0-alpha.*` Flow track onto stable **`1.3.5`**.
+**Status:** **Done.** Stages A–E completed 2026-09-28, zero rollbacks. Stage F (upstream give-back + the F4 follow-up) remains open.
 
 **Two repos are involved:**
 
@@ -230,9 +231,7 @@ Repo: `mittwald-extension-mock-host`
 - [X] Expected: **works**. `normalizeReadyEvent` accepts the bare `Version.v3` number and v5-only features stay gated.
 - [X] If it fails → the problem is entirely in the mock host bump. Fix there before going further. Do **not** start Stage C. -> no fails, everything fine
 
-Finding: Error behavior is slightly worse in this combination, i do not
-get error message when post comment with non-existant mock extension instance.
-This might be an issue of host- and frontend-fragment version mismatch now.
+**Finding (open):** error behaviour is slightly worse in this combination — posting a comment against a **non-existent mock extension instance** produces *no* error message. Suspected at the time to be host/remote version skew. Promoted to **F4** (§6, Stage F) for follow-up, since Stage C/D later moved the whole stack to v5 and the observation was not re-checked there.
 
 ### Stage C — Bump the extension, run against the upgraded host
 
@@ -265,7 +264,9 @@ Repo: `reference-extension`
 
 - [X] Changeset entry in `reference-extension`.
 - [X] Commit both repos.
-- [ ] Hand the §4 findings to Stage F.
+- [X] Hand the §4 findings to Stage F.
+
+**Outcome: Stages A–E completed with zero rollbacks.** The staged order held: Stage B confirmed backward compatibility before the extension was touched, and no stage ever left both repos broken at once.
 
 ### Stage F — Bonus: upstream fix proposal (optional, not blocking)
 
@@ -341,6 +342,27 @@ Each call gets its own timer, the timer is cleared on success, and no shared sta
 
 Worth proposing only if it can be made conditional (dev builds, or gated on the consumer opting in). **F1 achieves most of the same diagnostic value with none of the noise**, so F3 is the fallback, not the headline.
 
+#### F4 — Follow-up: missing error surfacing for a non-existent extension instance
+
+**Origin:** observed in Stage B (upgraded host × unchanged `alpha.557` extension). Posting a comment against a non-existent mock extension instance produced **no error message**, where previously an error was shown.
+
+**Status: unconfirmed on the final stack.** Stage B ran a v3 remote against a v5 host, so version skew was a plausible explanation at the time. Stages C and D then moved everything to v5 end to end, but the scenario was not re-tested. **Reproduce first; do not report upstream until it is confirmed on the v5-only stack.**
+
+**Reproduction steps**
+
+- [ ] Re-run the Stage B scenario on the **current** stack (1.3.5 extension × 1.3.5 mock host), deliberately pointing at a non-existent extension instance.
+- [ ] If the error surfaces correctly → it *was* skew. Close F4, and note in §3.3 that degraded error reporting is another symptom of running a v3 remote against a v5 host.
+- [ ] If it still does not surface → it is a real gap. Continue below.
+
+**Where to look, cheapest first**
+
+1. **The mock host passes no error-related handlers.** `RemoteRendererBrowserProps@1.3.5` exposes `onConnected`, `onDeprecation`, `onComponentUsage`, `onNavigationStateChanged` — but *no* `onError` prop, so the renderer handles the remote's `setError` internally. Worth confirming what `RemoteRenderer` actually does with it in 1.3.5, and whether the mock should be opting into `onDeprecation` at minimum to see what the stack is trying to tell us.
+2. **The v5 error channel is new and untested here.** `setHostError` / `onHostError` (host → remote) and `reportEvent` / `reportDeprecation` were all added in this protocol bump. None of them are exercised by the mock host today.
+3. **The extension's own error path.** `src/middleware/error-handling.ts`, `src/global-errors.ts`, `src/hooks/useFormErrorHandling.tsx`, and the `ErrorBoundary` in `src/routes/__root.tsx`. A server function rejecting for a missing instance should reach the form error handling — verify it still does, independently of any Flow plumbing.
+4. **`RemoteRoot`'s error relay.** `handleRenderError` forwards to `connectionRef.current?.imports.setError(...)`. Confirm the remote is emitting at all before blaming the host for not displaying.
+
+**Note:** this is a *local* follow-up, not part of the upstream issue, until step 1 above proves otherwise. It may well turn out to be a gap in the mock host's own error surfacing — which would be a mock-host improvement, not a Flow bug.
+
 #### Also worth raising
 
 - Document `initExtBridge()` as a **required setup step** for any extension that renders `<RemoteRoot>` and uses `useConfig()` / `useLanguage()`. In `1.3.5` the `/react` entry no longer initialises the global, so this is now load-bearing and easy to miss when migrating from `0.2.0-alpha.*`.
@@ -348,10 +370,18 @@ Worth proposing only if it can be made conditional (dev builds, or gated on the 
 
 #### Deliverable
 
+**Upstream** (ready to file — F1/F2 are confirmed against published 1.3.5 sources):
+
 - [ ] One issue against <https://github.com/mittwald/flow> covering F1 + F2, with the §1.1 reproduction (lazy route chunk → ext-bridge evaluates after `RemoteRoot` mounts → silent skip → 7.5 s timeout in an unrelated component).
 - [ ] Mention F3 and the doc gaps in the same issue rather than splitting.
 
+**Local** (investigate before it can be classified):
+
+- [ ] F4 — reproduce the missing-error-surfacing case on the v5-only stack, then route it to either the mock host, this repo, or the upstream issue depending on the outcome.
+
 ### 6.1 Smoke test checklist (run identically in Stages B, C, D)
+
+Reusable template — boxes are intentionally left unticked; each stage records its own pass above.
 
 - [ ] Dev server starts clean; no `customElements.define` duplicate errors.
 - [ ] Extension iframe console: `globalThis.mwExtBridge` is **defined** immediately after load.
@@ -376,12 +406,18 @@ Working tree / branches only; no infrastructure changes. Both repos are on branc
 
 ## 8. Open questions
 
-- Is there a migration guide for `0.2.0-alpha.*` → `1.x`? (Not consulted yet — worth checking the Flow docs at <https://mittwald.github.io/flow> and the repo changelog **before** Stage C.)
-- Which protocol version does **productive mStudio** host speak? If it is older than v5 we would hit the same forward-compat asymmetry as an un-bumped mock host (§3.3). Stage D is the only place this can be observed.
-- Should the mock host start passing the new `hostConfig` prop (`language` / `theme`) so we can exercise `useLanguage()`?
-- Should we adopt `useLanguage()` / the `i18next` integration now, or keep this upgrade mechanical? Default: mechanical.
+**Resolved by the upgrade:**
+
+- ~~Which protocol version does **productive mStudio** host speak?~~ **Answered: it speaks v5.** Stage D passed with the 1.3.5 extension against productive mStudio, so the forward-compat asymmetry from §3.3 does not apply there.
+- ~~Is there a migration guide for `0.2.0-alpha.*` → `1.x`?~~ Moot for this upgrade — Stages A–E completed without one. Still worth a look before the *next* Flow bump.
+
+**Still open:**
+
+- F4 (§6, Stage F): is the missing error surfacing real on the v5-only stack, or was it Stage B version skew?
+- Should the mock host start passing the new `hostConfig` prop (`language` / `theme`) so we can exercise `useLanguage()`? (See also F4 — the mock currently opts into none of the new host-side callbacks.)
+- Should we adopt `useLanguage()` / the `i18next` integration now? Default: no, keep the upgrade mechanical. Now a separate feature decision.
 - Is `@mittwald/flow-remote-react-components` actually used by the mock host, or can it be dropped from its `package.json`?
-- Do we want `next` (`1.4.0-next.5`) instead? Default answer: no — the goal is explicitly *stable*.
+- Do we want `next` (`1.4.0-next.5`) instead? Default answer: no — the goal was explicitly *stable*, and we are there.
 
 ---
 
