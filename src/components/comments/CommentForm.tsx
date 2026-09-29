@@ -26,7 +26,11 @@ export const CommentForm = () => {
 
     const { showBoundary } = useErrorBoundary();
 
-    const form = useForm<FormValues>({});
+    const form = useForm<FormValues>({
+        defaultValues: {
+            text: "",
+        },
+    });
 
     const Field = typedField(form);
 

@@ -274,7 +274,7 @@ Nothing here is required for the upgrade. It is the give-back: we lost an aftern
 
 All three are in `@mittwald/ext-bridge` / `@mittwald/flow-remote-core` as of `1.3.5`.
 
-#### F1 — Make the error say what actually went wrong (highest value, zero false positives)
+#### [DONE] F1 — Make the error say what actually went wrong (highest value, zero false positives)
 
 Today a missing `initExtBridge()` and a genuinely unreachable host produce the *same* message, 7.5 s late, in whichever component happened to call `useConfig()` first. But `readiness` can tell the two apart: if the host connected, `mwExtBridge.connection` was assigned; if the bridge was never initialised in time, it was not.
 
@@ -300,7 +300,7 @@ isReady: async () => {
 
 This is strictly additive and cannot misfire — it only refines the message on a path that was already throwing.
 
-#### F2 — Per-call timeout instead of one shared, self-poisoning promise
+#### [DONE] F2 — Per-call timeout instead of one shared, self-poisoning promise
 
 Current:
 
@@ -342,7 +342,7 @@ Each call gets its own timer, the timer is cleared on success, and no shared sta
 
 Worth proposing only if it can be made conditional (dev builds, or gated on the consumer opting in). **F1 achieves most of the same diagnostic value with none of the noise**, so F3 is the fallback, not the headline.
 
-#### F4 — Follow-up: missing error surfacing for a non-existent extension instance
+#### [DONE] F4 — Follow-up: missing error surfacing for a non-existent extension instance
 
 **Origin:** observed in Stage B (upgraded host × unchanged `alpha.557` extension). Posting a comment against a non-existent mock extension instance produced **no error message**, where previously an error was shown.
 
@@ -378,9 +378,17 @@ http://localhost:3000/_serverFn/eyJmaWxlIjoiL3NyYy9zZXJ2ZXJGdW5jdGlvbnMvY29tbWVu
 
 The POST failing with 500 is explained already as missing extension instance, but as mentioned user even gets green checkmark without further notice that posting comment failed.
 
-#### F5 - (Optional) Another bonus level: Comment field is not properly cleared
+#### [DONE] F5 - (Optional) Another bonus level: Comment field is not properly cleared
 
-When sending a comment, textarea is not cleared up, although app itself cries on empty field when re-sending. Probably binding of textarea against app data not done properly.
+When sending a comment, textarea was not cleared up, although app itself cried on empty field when re-sending.
+
+**Resolution:** `CommentForm` created React Hook Form without `defaultValues`, so `form.reset()` reset `text` to `undefined`. The Flow `Field` adapter then passed an undefined value to the remote `TextArea`, leaving it uncontrolled and retaining its existing text. Initializing `text` with `defaultValues: { text: "" }` makes reset provide a controlled empty string and clears the field.
+
+Validated with `tsc --noEmit`, focused Biome, and editor diagnostics.
+
+#### F6 - Proper test coverage
+
+F4 already started tests - continue?!
 
 #### Also worth raising
 
