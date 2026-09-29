@@ -3,7 +3,7 @@
 **Date:** 2026-09-28
 **Branch:** `lb/fresh-ref-hunt-deletion-bug`
 **Goal:** Move the reference extension off the abandoned `0.2.0-alpha.*` Flow track onto stable **`1.3.5`**.
-**Status:** **Done.** Stages A–E completed 2026-09-28, zero rollbacks. Stage F (upstream give-back + the F4 follow-up) remains open.
+**Status:** **Done.** Stages A–E completed 2026-09-28, zero rollbacks. Stage F upstream give-back remains open; the F4 follow-up is complete.
 
 **Two repos are involved:**
 
@@ -231,7 +231,7 @@ Repo: `mittwald-extension-mock-host`
 - [X] Expected: **works**. `normalizeReadyEvent` accepts the bare `Version.v3` number and v5-only features stay gated.
 - [X] If it fails → the problem is entirely in the mock host bump. Fix there before going further. Do **not** start Stage C. -> no fails, everything fine
 
-**Finding (open):** error behaviour is slightly worse in this combination — posting a comment against a **non-existent mock extension instance** produces *no* error message. Suspected at the time to be host/remote version skew. Promoted to **F4** (§6, Stage F) for follow-up, since Stage C/D later moved the whole stack to v5 and the observation was not re-checked there.
+**Finding (resolved by F4):** error behaviour was slightly worse in this combination — posting a comment against a **non-existent mock extension instance** produced *no* error message. The same failure reproduced on the v5-only stack, so it was not caused by host/remote version skew.
 
 ### Stage C — Bump the extension, run against the upgraded host
 
@@ -346,15 +346,18 @@ Worth proposing only if it can be made conditional (dev builds, or gated on the 
 
 **Origin:** observed in Stage B (upgraded host × unchanged `alpha.557` extension). Posting a comment against a non-existent mock extension instance produced **no error message**, where previously an error was shown.
 
-**Status: unconfirmed on the final stack.** Stage B ran a v3 remote against a v5 host, so version skew was a plausible explanation at the time. Stages C and D then moved everything to v5 end to end, but the scenario was not re-tested. **Reproduce first; do not report upstream until it is confirmed on the v5-only stack.**
+**Status: resolved.** The failure reproduced on the v5-only stack, so it was not caused by the v3 remote/v5 host version skew from Stage B.
 
 **Reproduction steps**
 
 - [X] Re-run the Stage B scenario on the **current** stack (1.3.5 extension × 1.3.5 mock host), deliberately pointing at a non-existent extension instance.
-- [ ] If the error surfaces correctly → it *was* skew. Close F4, and note in §3.3 that degraded error reporting is another symptom of running a v3 remote against a v5 host.
-- [X] If it still does not surface → it is a real gap. Continue below.
+- [X] The error still did not surface, confirming a local error-path gap rather than version skew.
 
 **Error did NOT surface in reproduction with updated flow everywhere!**
+
+**Resolution:** The extension's `handleServerErrors` middleware returned `Response.json(...)` with an HTTP error status. The upgraded TanStack Start client transport parsed JSON responses without turning a `500` response into a rejected server-function promise. The comment form therefore followed its success path and reset the form. The middleware now throws an `Error` containing the serialized public error body, allowing `useFormErrorHandling` and `parsePublicError` to display the failure. A regression test was added in `src/middleware/error-handling.test.ts`.
+
+Validated with `tsc --noEmit`, the focused Vitest regression test, and Biome. The focused test passes; its runner also logs the unrelated unavailable `db` migration host during teardown.
 
 **Where to look, cheapest first**
 
@@ -393,7 +396,7 @@ When sending a comment, textarea is not cleared up, although app itself cries on
 
 **Local** (investigate before it can be classified):
 
-- [ ] F4 — reproduce the missing-error-surfacing case on the v5-only stack, then route it to either the mock host, this repo, or the upstream issue depending on the outcome.
+- [X] F4 — reproduce the missing-error-surfacing case on the v5-only stack and fix the extension's server-function error propagation.
 
 ### 6.1 Smoke test checklist (run identically in Stages B, C, D)
 
@@ -429,8 +432,8 @@ Working tree / branches only; no infrastructure changes. Both repos are on branc
 
 **Still open:**
 
-- F4 (§6, Stage F): is the missing error surfacing real on the v5-only stack, or was it Stage B version skew?
-- Should the mock host start passing the new `hostConfig` prop (`language` / `theme`) so we can exercise `useLanguage()`? (See also F4 — the mock currently opts into none of the new host-side callbacks.)
+- F4 (§6, Stage F): resolved in the extension. The issue was caused by the TanStack Start upgrade from `@tanstack/start-client-core` `1.139.11` to `1.170.33`, not by Flow protocol version skew.
+- Should the mock host start passing the new `hostConfig` prop (`language` / `theme`) so we can exercise `useLanguage()`?
 - Should we adopt `useLanguage()` / the `i18next` integration now? Default: no, keep the upgrade mechanical. Now a separate feature decision.
 - Is `@mittwald/flow-remote-react-components` actually used by the mock host, or can it be dropped from its `package.json`?
 - Do we want `next` (`1.4.0-next.5`) instead? Default answer: no — the goal was explicitly *stable*, and we are there.
