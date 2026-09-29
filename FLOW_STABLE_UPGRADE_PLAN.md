@@ -268,11 +268,11 @@ Repo: `reference-extension`
 
 **Outcome: Stages A–E completed with zero rollbacks.** The staged order held: Stage B confirmed backward compatibility before the extension was touched, and no stage ever left both repos broken at once.
 
-### Stage F — Bonus: upstream fix proposal (optional, not blocking)
+### Stage F — Bonus: upstream fix proposals and minor issues (optional, not blocking)
 
 Nothing here is required for the upgrade. It is the give-back: we lost an afternoon to a failure mode that is cheap to make self-diagnosing, and we are probably not the last. Ordered by value-per-line.
 
-All three are in `@mittwald/ext-bridge` / `@mittwald/flow-remote-core` as of `1.3.5`.
+First three are in `@mittwald/ext-bridge` / `@mittwald/flow-remote-core` as of `1.3.5`.
 
 #### [DONE] F1 — Make the error say what actually went wrong (highest value, zero false positives)
 
@@ -388,7 +388,36 @@ Validated with `tsc --noEmit`, focused Biome, and editor diagnostics.
 
 #### F6 - Proper test coverage
 
-F4 already started tests - continue?!
+Document a practical testing blueprint for extensions built from this reference, without committing this repository to maintaining a generic conformance framework. The goal is to make the important boundaries visible and easy to copy while keeping implementation effort small.
+
+Do **not** test the app-specific comment feature. Keep the existing F4 regression test as the example for server-function error propagation, and retain the webhook probe scripts as executable security checks.
+
+##### F6.1 - Document the testing boundaries
+
+- [ ] Add a short testing guide describing the recommended layers: domain/API contract tests, webhook security tests, server-function error tests, and host smoke tests.
+- [ ] For each layer, document what should be mocked, what should be tested at the HTTP boundary, and which behavior still requires productive mStudio.
+- [ ] Include representative fixtures for extension ID, instance ID, project context, session data, API responses, and webhook payloads without including real credentials.
+- [ ] Document the local/mock environment versus production signature-verification path, including the risks of accidentally disabling verification.
+
+##### F6.2 - Keep a minimal executable safety net
+
+- [ ] Keep the focused F4 Vitest regression test green and add only small, high-value tests where the documented boundary would otherwise be easy to break.
+- [ ] Keep the missing-signature and invalid-signature webhook probes runnable against a local server, and document their expected status codes.
+- [ ] Add one representative mock mStudio API test covering a successful request, a permission failure, and public-error serialization. Do not build a complete API simulator.
+- [ ] Add one host smoke test or documented manual procedure proving that the remote loads, initializes `globalThis.mwExtBridge`, and renders the non-comment shell without duplicate-registration or readiness errors.
+
+##### F6.3 - Make the examples reusable
+
+- [ ] Structure fixtures and examples around public adapter boundaries instead of private component implementation details.
+- [ ] Include a short failure guide for readiness ordering, duplicate Flow modules, webhook signatures, authentication context, API status handling, and server-function serialization.
+- [ ] State explicitly that the guide is a starter template, not a required shared package or a guarantee of compatibility with every mStudio host version.
+- [ ] Link the guide from the README and record the remaining productive-mStudio smoke checks separately.
+
+F6 is complete when another extension developer can copy the documented setup, understand what is protected by automation, and reproduce the remaining manual checks without investing days in a framework that this repository may be the only consumer of.
+
+#### F7 - Update german README from all the learnings
+
+As title says.
 
 #### Also worth raising
 
