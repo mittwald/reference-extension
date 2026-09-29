@@ -14,10 +14,17 @@ export const Route = createFileRoute("/api/webhooks/mittwald")({
             POST: async ({ request }) => {
                 const env = getEnvironmentVariables();
 
-                const combinedHandler = new CombinedWebhookHandlerFactory(
-                    new PgExtensionStorage(db, extensionInstances),
-                    env.EXTENSION_ID,
-                ).build();
+                const combinedHandlerFactory =
+                    new CombinedWebhookHandlerFactory(
+                        new PgExtensionStorage(db, extensionInstances),
+                        env.EXTENSION_ID,
+                    );
+
+                if (env.MITTWALD_API_BASE_URL) {
+                    combinedHandlerFactory.withoutWebhookSignatureVerification();
+                }
+
+                const combinedHandler = combinedHandlerFactory.build();
 
                 const httpHandler = new HttpWebhookHandler(combinedHandler);
                 return httpHandler.handleWebhook(request);

@@ -1,0 +1,485 @@
+# Flow Stable Upgrade — Notes & Plan
+
+**Date:** 2026-09-28
+**Branch:** `lb/fresh-ref-hunt-deletion-bug`
+**Goal:** Move the reference extension off the abandoned `0.2.0-alpha.*` Flow track onto stable **`1.3.5`**.
+**Status:** **Done.** Stages A–E completed 2026-09-28, zero rollbacks. Stage F upstream give-back remains open; the F4 follow-up is complete.
+
+**Two repos are involved:**
+
+| Repo | Role | Path / URL |
+|---|---|---|
+| `reference-extension` | the extension (remote / iframe side) | this workspace |
+| `mittwald-extension-mock-host` | the mock Frontend Fragment host | <https://github.com/gandie/mittwald-extension-mock-host> (default branch `master`) |
+
+The mock host is upgraded **first** and verified against the *unchanged* extension, before the extension is touched. See §6.
+
+---
+
+## 1. Background — how we got here
+
+A broad dependency upgrade (react 19.2→19.3, vite 7.2→7.3, TanStack Router 1.139→1.170, Start 1.139→1.168, api-client 4.267→4.474, …) was applied. The Flow/ext-bridge packages were **not** touched and stayed pinned at `0.2.0-alpha.557`.
+
+Two problems surfaced.
+
+### 1.1 `ExtBridgeError: Ext Bridge not ready after 7500ms` (fixed)
+
+Posting a comment threw inside `<CommentMessage>` → `useConfig()` → `useExtBridge()` → `getExtBridge()` → `readiness.isReady()`.
+
+**Root cause — an undeclared, order-dependent coupling via `globalThis`:**
+
+1. `@mittwald/ext-bridge/{browser,react}` sets `globalThis.mwExtBridge = { readiness }` as a side effect of module evaluation.
+2. `RemoteRoot` connects to the host in its `ref` callback on the **first commit**, via `connectHostRenderRoot`:
+   ```js
+   if (typeof mwExtBridge !== "undefined") {
+     mwExtBridge.connection = connection.imports;
+     await mwExtBridge.readiness.setIsReady();
+   }
+   ```
+   If the global is not yet defined, the readiness handshake is **silently skipped forever** — no error, no warning.
+3. The only modules importing `@mittwald/ext-bridge/react` were `CommentMessage.tsx` and `CommentMessageLoading.tsx`, which live in the lazily-loaded `/` route chunk (`routes/index.tsx` has `ssr: false`). They only mount once at least one comment exists.
+4. Therefore: post a comment → `CommentMessage` mounts → ext-bridge evaluates for the first time → fresh, never-resolved `readiness` promise → `isReady()` races it against the 7500 ms timeout → error.
+
+The upgrade did not break the bridge. It changed **module evaluation / chunking order**, exposing a latent bug. Previously ext-bridge happened to land in the entry graph before `RemoteRoot` mounted.
+
+**Fix applied** — first import in `src/routes/__root.tsx`:
+
+```tsx
+// must be evaluated before RemoteRoot connects, otherwise globalThis.mwExtBridge
+// is still undefined and flow-remote-core silently skips readiness.setIsReady()
+import "@mittwald/ext-bridge/browser";
+```
+
+Verified working against both the mocked host (mocked API) and productive mStudio. Committed as a checkpoint.
+
+### 1.2 `api-client` breaking change (fixed)
+
+`@mittwald/api-client` 4.474 removed `project.updateProjectDescription`; it is folded into `project.updateProject` with an **identical** request shape. Fixed in `src/domain/project.ts`. `tsc --noEmit` is clean.
+
+---
+
+## 2. Version landscape (checked 2026-09-28 via `npm view`)
+
+| Package | Current | `latest` | `next` | `experimental` |
+|---|---|---|---|---|
+| `@mittwald/ext-bridge` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | — |
+| `@mittwald/flow-react-components` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | `0.2.0-experimental.776` |
+| `@mittwald/flow-remote-core` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | `0.2.0-alpha.35` |
+| `@mittwald/flow-remote-elements` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | `0.2.0-alpha.35` |
+| `@mittwald/flow-remote-react-components` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | `0.2.0-alpha.35` |
+| `@mittwald/mstudio-ext-react-components` | `0.2.0-alpha.557` | **`1.3.5`** | `1.4.0-next.5` | — |
+| `@mittwald/remote-dom-react` | `1.2.2-mittwald.10` | `1.2.2-mittwald.10` | — | — |
+
+The `experimental` dist-tag still points at `0.2.0-alpha.35` — the `0.2.0-alpha.557` line is that abandoned experimental track. This explains the alpha churn.
+
+`@mittwald/remote-dom-react` is unchanged, so no churn expected there.
+
+### 2.1 Mock host (`mittwald-extension-mock-host`, branch `master`)
+
+| Package | Current | `latest` |
+|---|---|---|
+| `@mittwald/flow-react-components` | `0.2.0-alpha.737` | **`1.3.5`** |
+| `@mittwald/flow-remote-core` | `^0.2.0-alpha.661` | **`1.3.5`** |
+| `@mittwald/flow-remote-react-components` | `^0.2.0-alpha.661` | **`1.3.5`** |
+| `@mittwald/flow-remote-react-renderer` | `^0.2.0-alpha.661` | **`1.3.5`** |
+| `react` / `react-dom` | `^19.2.0` | (fine) |
+| `vite` | `^7.2.4` | (fine) |
+
+Notes:
+- The mock host uses `@mittwald/flow-remote-react-renderer`, which the extension does not. It also publishes `1.3.5` / `next 1.4.0-next.5`.
+- The mock host is currently on **newer alphas (`.661`/`.737`) than the extension (`.557`)** and works today — direct evidence that the host/remote handshake tolerates version skew.
+- `@mittwald/flow-remote-react-components` is declared but `src/App.jsx` does not appear to use it; it may be droppable.
+- `src/App.jsx` contains TypeScript syntax (`useRef<HTMLIFrameElement>(null)`) in a `.jsx` file. Pre-existing; leave alone unless the Vite 7 / esbuild loader starts rejecting it.
+
+---
+
+## 3. What 1.3.5 changes
+
+### 3.1 Dependency / peer metadata
+
+`@mittwald/ext-bridge@1.3.5`:
+- `dependencies`: `zod ^4.4.3` (was `^3.25.76`), `jose ^6.2.10`, `axios ^1.19.0`, `std-env ^4.1.0`, `@mittwald/react-use-promise ~4.2.2`
+- `peerDependencies`: `react ^19.2.0`, `react-dom ^19.2.0`, `i18next ^26.0.0` — **all optional**
+- New export subpath: `./i18next`
+
+`@mittwald/flow-remote-react-components@1.3.5`:
+- `peerDependencies`: `react ^19.2.0`, `react-hook-form ^7.65.0`, `@mittwald/ext-bridge 1.3.5` (exact), `@internationalized/date ^3.12.2`
+- `dependencies`: `flow-remote-core 1.3.5`, `flow-remote-elements 1.3.5`, `flow-react-components 1.3.5`, `remote-dom-react 1.2.2-mittwald.10`, `react-error-boundary ^6.1.3`
+
+`@mittwald/mstudio-ext-react-components@1.3.5`:
+- `peerDependencies`: `react ^19.2.0`, `@mittwald/flow-remote-react-components 1.3.5` (exact)
+
+**Compatible with our current stack:** react 19.3, react-dom 19.3, react-hook-form 7.89, zod 4.6, react-error-boundary 6.1.
+
+**Bonus:** the zod 3→4 move in ext-bridge removes a duplicate zod copy from the bundle (app is on zod 4).
+
+### 3.2 Breaking: ext-bridge global initialization is now explicit
+
+`global-browser.mjs` no longer self-assigns on import:
+
+```js
+// 1.3.5
+if (typeof globalThis.mwExtBridge !== "undefined")
+  console.warn("mwExtBridge is already defined. ... installed multiple times.");
+var mwExtBridge = { readiness: readinessApi };
+function initExtBridge() { globalThis.mwExtBridge = mwExtBridge; }
+export { initExtBridge, mwExtBridge };
+```
+
+- `@mittwald/ext-bridge/browser` → **does** call `initExtBridge()` on import, and re-exports it.
+- `@mittwald/ext-bridge/react` → **no longer touches the global at all** (only exports `useConfig`, `useLanguage`).
+
+**Consequence:** our `__root.tsx` side-effect import is not a workaround — it is the required setup step under the stable API. Upgrading *without* it would reproduce the 7500 ms bug deterministically.
+
+### 3.3 Breaking: host protocol v3 → v5
+
+**Extension side** (`connectHostRenderRoot`, 1.3.5):
+- `setIsReady({ version: Version.v5, packageVersion })` — an **object** (was the bare number `Version.v3`)
+- new thread export `setHostError`
+- new `onHostError` / `packageVersion` options
+- render path refactored into `connectRemoteReceiver`
+
+**Host side** (`connectRemoteIframe`, 1.3.5) — new exports `reportDeprecation`, `reportEvent`, `getHostConfig`, new `hostConfig` prop, and:
+
+```js
+var normalizeReadyEvent = (event) => {
+  if (typeof event === "number") return { version: event };   // old extensions
+  return event ?? { version: Version.v1 };
+};
+...
+reportHostError: async (error) => {
+  if (result.version >= Version.v5) await result.thread.imports.setHostError(error);
+}
+```
+
+**This asymmetry dictates the upgrade order:**
+
+| | old host (alpha) | new host (1.3.5) |
+|---|---|---|
+| **old extension (alpha, sends number)** | works today | **works** — `normalizeReadyEvent` handles the number, v5-only features are version-gated |
+| **new extension (1.3.5, sends object)** | **degraded** — host assigns the object to `result.version`, so `version >= Version.v2` is `NaN`-false and `setPathname` silently no-ops; `setHostError` does not exist | works |
+
+So: **bump the host first.** A new host is backward compatible; an old host is not forward compatible.
+
+### 3.4 Host config plumbing (`language` / `theme`)
+
+1.3.5 `setIsReady` does `parseConfig(config)` **and** `extractHostConfig(config)`, the latter reading `config.language` and `config.theme`. The host merges these in via the new `hostConfig` prop (`getWithMergedHostConfig`).
+
+The config zod schema (`config/schemas.mjs`) requires only `sessionId`, `userId`, `extensionId`, `extensionInstanceId`; every context parameter is `optionalString`, and there is a `.catchall(optionalString)`. **The mock host's existing `getConfig` payload therefore still parses unchanged** — no new required fields. `language`/`theme` are optional and may be added later if we want to exercise `useLanguage()`.
+
+### 3.5 New features
+
+- `useLanguage()` hook
+- `@mittwald/ext-bridge/i18next` integration subpath
+
+---
+
+## 4. Upstream smells NOT fixed in 1.3.5
+
+Verified against the published 1.3.5 sources. Concrete fix proposals live in **Stage F** (§6).
+
+1. **Silent readiness skip.** `connectHostRenderRoot` still treats a missing `mwExtBridge` as a legitimate state and skips the handshake with no diagnostic. The failure surfaces 7.5 s later in an unrelated component. A single `console.warn` in the `else` branch would turn a mystery into an instant diagnosis.
+2. **Shared module-level timeout promise.** `readiness.mjs` is byte-for-byte unchanged here:
+   ```js
+   const [timoutPromise, , rejectOnTimeout] = controllablePromise();
+   const startTimeout = () => { setTimeout(() => rejectOnTimeout(...), timeoutMs); return timoutPromise; };
+   ```
+   The first `isReady()` call's 7500 ms timer permanently poisons the promise for every later caller. Harmless only because `Promise.race([readiness, timoutPromise])` lists the resolved `readiness` first. Fragile.
+3. Typo `timoutPromise` persists.
+
+---
+
+## 5. Risks
+
+| Risk | Severity | Notes |
+|---|---|---|
+| Renamed / removed Flow components between alpha and 1.3.5 (extension) | Medium | We use `Message`, `MessageThread`, `IllustratedMessage`, `LayoutCard`, `ColumnLayout`, `Section`, `Avatar`, `Initials`, `Image`, `Header`, `Content`, `Align`, `Text`, `Heading`, `InlineCode`, `Title`. Caught by `tsc`. |
+| Prop/API changes on retained components | Medium | e.g. `Message type="sender" \| "responder"`. Caught by `tsc`. |
+| Mock host `RemoteRenderer` API drift | Low | Verified: `src`, `timeoutMs`, `extBridgeImplementation` all still present in `RemoteRendererBrowserProps@1.3.5`. New optional props: `onConnected`, `onDeprecation`, `onComponentUsage`, `hostPathname`, `integrations`. |
+| Mock host `RemoteReceiver` import | Low | Verified: `flow-remote-core@1.3.5` still re-exports `RemoteReceiver` (now from `@mittwald/remote-dom-core/receivers`). The mock's `receiver` const is unused anyway. |
+| Mock host `getConfig` payload rejected by stricter schema | Low | Verified not an issue — see §3.4. |
+| Exact-version peer pins (`ext-bridge 1.3.5`, `flow-remote-react-components 1.3.5`) | Low | All Flow packages must move together in lockstep, in **both** repos. |
+| Custom-element double-registration (`flr-*`) | Low | Existing `resolve.dedupe` in `vite.config.ts` should still cover it; keep the dedupe list. |
+| Stale Vite dep cache / stale `node_modules/.pnpm` dirs | Low | `0.2.0-alpha.557` + react 19.2 leftovers are still on disk in the extension. Clean install before testing. |
+
+The previously-High "mock host may not speak v5" risk is **retired**: we control the mock host, and it is upgraded first (§6).
+
+---
+
+## 6. Plan — four stages, host first
+
+> Rationale for the order is in §3.3: a 1.3.5 host is backward compatible with an alpha extension, but an alpha host is **not** forward compatible with a 1.3.5 extension. Upgrading the host first therefore keeps a working reference point at every step and isolates failures to one repo at a time.
+
+### Stage A — Bump the mock host
+
+Repo: `mittwald-extension-mock-host`
+
+- [X] Create a branch off `master`. -> `upgrade/stable-flow`
+- [X] Bump to exact `1.3.5`: `flow-react-components`, `flow-remote-core`, `flow-remote-react-components` (or drop it if genuinely unused), `flow-remote-react-renderer`.
+- [X] Clean install (`npm ci` / `rm -rf node_modules package-lock.json && npm install`), clear `node_modules/.vite`.
+- [X] Confirm a single resolved `@mittwald/ext-bridge@1.3.5` in the lockfile.
+- [X] `npm run lint` and `npm run build` pass.
+- [X] Fix any `RemoteRenderer` / `RemoteReceiver` import or prop fallout (expected: none — see §5). -> None found as expected.
+
+### Stage B — Upgraded host × **unchanged** extension
+
+**This is the backward-compatibility gate. The extension is not touched in this stage.**
+
+- [X] Extension still at `0.2.0-alpha.557` + the `__root.tsx` ext-bridge fix, i.e. the current checkpoint commit.
+- [X] Run upgraded mock host against it.
+- [X] Smoke test (see §6.1).
+- [X] Expected: **works**. `normalizeReadyEvent` accepts the bare `Version.v3` number and v5-only features stay gated.
+- [X] If it fails → the problem is entirely in the mock host bump. Fix there before going further. Do **not** start Stage C. -> no fails, everything fine
+
+**Finding (resolved by F4):** error behaviour was slightly worse in this combination — posting a comment against a **non-existent mock extension instance** produced *no* error message. The same failure reproduced on the v5-only stack, so it was not caused by host/remote version skew.
+
+### Stage C — Bump the extension, run against the upgraded host
+
+Repo: `reference-extension`
+
+- [X] Set all six `@mittwald/*` Flow packages to exact `1.3.5` in `package.json`:
+      `ext-bridge`, `flow-react-components`, `flow-remote-core`, `flow-remote-elements`, `flow-remote-react-components`, `mstudio-ext-react-components`.
+- [X] Leave `@mittwald/remote-dom-react` at `1.2.2-mittwald.10`.
+- [X] Clean install: remove `node_modules`, the Vite cache dir (`VITE_CACHE_DIR` / `node_modules/.vite`), then `pnpm install`.
+- [X] Verify a single resolved copy of `@mittwald/ext-bridge` in `pnpm-lock.yaml`.
+- [X] Replace the side-effect import in `src/routes/__root.tsx` with the explicit stable API:
+      `import { initExtBridge } from "@mittwald/ext-bridge/browser";` + call `initExtBridge()` at module scope, before any render.
+- [X] Re-check `src/middleware/auth.ts` (`getSessionToken` from `@mittwald/ext-bridge/browser`, `verify` from `@mittwald/ext-bridge/node`) still resolves.
+- [X] Review `vite.config.ts`: `optimizeDeps.exclude: ["@mittwald/ext-bridge"]` (added because the `./node` export condition breaks the esbuild dep scanner) — confirm still needed with the 1.3.5 exports map.
+- [X] Keep / update `resolve.dedupe` list.
+- [X] `npx tsc --noEmit` clean; fix renamed components or props.
+- [X] Biome clean.
+- [X] Production build succeeds.
+- [X] Smoke test against the **upgraded mock host** (see §6.1).
+- [X] Expected: works, now on protocol v5 end to end.
+
+### Stage D — Productive mStudio
+
+- [X] Only once Stage C is green.
+- [X] Run the upgraded extension against productive mStudio.
+- [X] Smoke test (see §6.1).
+- [X] Webhook scripts in `scripts/` still pass.
+
+### Stage E — Land
+
+- [X] Changeset entry in `reference-extension`.
+- [X] Commit both repos.
+- [X] Hand the §4 findings to Stage F.
+
+**Outcome: Stages A–E completed with zero rollbacks.** The staged order held: Stage B confirmed backward compatibility before the extension was touched, and no stage ever left both repos broken at once.
+
+### Stage F — Bonus: upstream fix proposals and minor issues (optional, not blocking)
+
+Nothing here is required for the upgrade. It is the give-back: we lost an afternoon to a failure mode that is cheap to make self-diagnosing, and we are probably not the last. Ordered by value-per-line.
+
+First three are in `@mittwald/ext-bridge` / `@mittwald/flow-remote-core` as of `1.3.5`.
+
+#### [DONE] F1 — Make the error say what actually went wrong (highest value, zero false positives)
+
+Today a missing `initExtBridge()` and a genuinely unreachable host produce the *same* message, 7.5 s late, in whichever component happened to call `useConfig()` first. But `readiness` can tell the two apart: if the host connected, `mwExtBridge.connection` was assigned; if the bridge was never initialised in time, it was not.
+
+`src/readiness.ts`:
+
+```ts
+isReady: async () => {
+  assertBrowserEnv();
+  try {
+    await Promise.race([readiness, startTimeout()]);
+  } catch (error) {
+    if (mwExtBridge.connection === undefined) {
+      throw new ExtBridgeError(
+        `Ext Bridge not ready after ${timeoutMs}ms: the host never connected. ` +
+          "If this extension renders <RemoteRoot>, make sure initExtBridge() has run " +
+          "(import '@mittwald/ext-bridge/browser') before the first render.",
+      );
+    }
+    throw error;
+  }
+}
+```
+
+This is strictly additive and cannot misfire — it only refines the message on a path that was already throwing.
+
+#### [DONE] F2 — Per-call timeout instead of one shared, self-poisoning promise
+
+Current:
+
+```ts
+const [timoutPromise, , rejectOnTimeout] = controllablePromise();
+const startTimeout = () => {
+  setTimeout(() => rejectOnTimeout(new ExtBridgeError(...)), timeoutMs);
+  return timoutPromise;                      // same promise for every caller
+};
+```
+
+The first `isReady()` call's timer rejects the *shared* promise at t+7500 ms and it stays rejected forever. Every later caller races against an already-rejected promise and only survives because `Promise.race` lists the resolved `readiness` first. It also leaks a timer per call. Proposed:
+
+```ts
+isReady: async () => {
+  assertBrowserEnv();
+  let timeoutId: ReturnType<typeof setTimeout>;
+  try {
+    await Promise.race([
+      readiness,
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new ExtBridgeError(`Ext Bridge not ready after ${timeoutMs}ms`)),
+          timeoutMs,
+        );
+      }),
+    ]);
+  } finally {
+    clearTimeout(timeoutId!);
+  }
+}
+```
+
+Each call gets its own timer, the timer is cleared on success, and no shared state can be poisoned. Also fixes the `timoutPromise` → `timeoutPromise` typo.
+
+#### F3 — Optional dev-time warning on the skipped handshake
+
+`connectHostRenderRoot` treats a missing `mwExtBridge` as a legitimate state, which it is — `@mittwald/ext-bridge` is an optional peer of `flow-remote-core`, so extensions that never use the bridge must not be nagged. A `console.warn` in the `else` branch would therefore produce false positives for them.
+
+Worth proposing only if it can be made conditional (dev builds, or gated on the consumer opting in). **F1 achieves most of the same diagnostic value with none of the noise**, so F3 is the fallback, not the headline.
+
+#### [DONE] F4 — Follow-up: missing error surfacing for a non-existent extension instance
+
+**Origin:** observed in Stage B (upgraded host × unchanged `alpha.557` extension). Posting a comment against a non-existent mock extension instance produced **no error message**, where previously an error was shown.
+
+**Status: resolved.** The failure reproduced on the v5-only stack, so it was not caused by the v3 remote/v5 host version skew from Stage B.
+
+**Reproduction steps**
+
+- [X] Re-run the Stage B scenario on the **current** stack (1.3.5 extension × 1.3.5 mock host), deliberately pointing at a non-existent extension instance.
+- [X] The error still did not surface, confirming a local error-path gap rather than version skew.
+
+**Error did NOT surface in reproduction with updated flow everywhere!**
+
+**Resolution:** The extension's `handleServerErrors` middleware returned `Response.json(...)` with an HTTP error status. The upgraded TanStack Start client transport parsed JSON responses without turning a `500` response into a rejected server-function promise. The comment form therefore followed its success path and reset the form. The middleware now throws an `Error` containing the serialized public error body, allowing `useFormErrorHandling` and `parsePublicError` to display the failure. A regression test was added in `src/middleware/error-handling.test.ts`.
+
+Validated with `tsc --noEmit`, the focused Vitest regression test, and Biome. The focused test passes; its runner also logs the unrelated unavailable `db` migration host during teardown.
+
+**Where to look, cheapest first**
+
+1. **The mock host passes no error-related handlers.** `RemoteRendererBrowserProps@1.3.5` exposes `onConnected`, `onDeprecation`, `onComponentUsage`, `onNavigationStateChanged` — but *no* `onError` prop, so the renderer handles the remote's `setError` internally. Worth confirming what `RemoteRenderer` actually does with it in 1.3.5, and whether the mock should be opting into `onDeprecation` at minimum to see what the stack is trying to tell us.
+2. **The v5 error channel is new and untested here.** `setHostError` / `onHostError` (host → remote) and `reportEvent` / `reportDeprecation` were all added in this protocol bump. None of them are exercised by the mock host today.
+3. **The extension's own error path.** `src/middleware/error-handling.ts`, `src/global-errors.ts`, `src/hooks/useFormErrorHandling.tsx`, and the `ErrorBoundary` in `src/routes/__root.tsx`. A server function rejecting for a missing instance should reach the form error handling — verify it still does, independently of any Flow plumbing.
+4. **`RemoteRoot`'s error relay.** `handleRenderError` forwards to `connectionRef.current?.imports.setError(...)`. Confirm the remote is emitting at all before blaming the host for not displaying.
+
+**Note:** this is a *local* follow-up, not part of the upstream issue, until step 1 above proves otherwise. It may well turn out to be a gap in the mock host's own error surfacing — which would be a mock-host improvement, not a Flow bug.
+
+**Update:** Error from browser console, POST failing is visible in console but users get no clue:
+
+```
+XHR POST
+http://localhost:3000/_serverFn/eyJmaWxlIjoiL3NyYy9zZXJ2ZXJGdW5jdGlvbnMvY29tbWVudHMvYWRkLWNvbW1lbnQudHM_dHNzLXNlcnZlcmZuLXNwbGl0IiwiZXhwb3J0IjoiYWRkQ29tbWVudFNlcnZlckZ1bmN0aW9uX2NyZWF0ZVNlcnZlckZuX2hhbmRsZXIifQ
+[HTTP/1.1 500  93ms]
+```
+
+The POST failing with 500 is explained already as missing extension instance, but as mentioned user even gets green checkmark without further notice that posting comment failed.
+
+#### [DONE] F5 - (Optional) Another bonus level: Comment field is not properly cleared
+
+When sending a comment, textarea was not cleared up, although app itself cried on empty field when re-sending.
+
+**Resolution:** `CommentForm` created React Hook Form without `defaultValues`, so `form.reset()` reset `text` to `undefined`. The Flow `Field` adapter then passed an undefined value to the remote `TextArea`, leaving it uncontrolled and retaining its existing text. Initializing `text` with `defaultValues: { text: "" }` makes reset provide a controlled empty string and clears the field.
+
+Validated with `tsc --noEmit`, focused Biome, and editor diagnostics.
+
+#### F6 - Proper test coverage
+
+Document a practical testing blueprint for extensions built from this reference, without committing this repository to maintaining a generic conformance framework. The goal is to make the important boundaries visible and easy to copy while keeping implementation effort small.
+
+Do **not** test the app-specific comment feature. Keep the existing F4 regression test as the example for server-function error propagation, and retain the webhook probe scripts as executable security checks.
+
+##### F6.1 - Document the testing boundaries
+
+- [ ] Add a short testing guide describing the recommended layers: domain/API contract tests, webhook security tests, server-function error tests, and host smoke tests.
+- [ ] For each layer, document what should be mocked, what should be tested at the HTTP boundary, and which behavior still requires productive mStudio.
+- [ ] Include representative fixtures for extension ID, instance ID, project context, session data, API responses, and webhook payloads without including real credentials.
+- [ ] Document the local/mock environment versus production signature-verification path, including the risks of accidentally disabling verification.
+
+##### F6.2 - Keep a minimal executable safety net
+
+- [ ] Keep the focused F4 Vitest regression test green and add only small, high-value tests where the documented boundary would otherwise be easy to break.
+- [ ] Keep the missing-signature and invalid-signature webhook probes runnable against a local server, and document their expected status codes.
+- [ ] Add one representative mock mStudio API test covering a successful request, a permission failure, and public-error serialization. Do not build a complete API simulator.
+- [ ] Add one host smoke test or documented manual procedure proving that the remote loads, initializes `globalThis.mwExtBridge`, and renders the non-comment shell without duplicate-registration or readiness errors.
+
+##### F6.3 - Make the examples reusable
+
+- [ ] Structure fixtures and examples around public adapter boundaries instead of private component implementation details.
+- [ ] Include a short failure guide for readiness ordering, duplicate Flow modules, webhook signatures, authentication context, API status handling, and server-function serialization.
+- [ ] State explicitly that the guide is a starter template, not a required shared package or a guarantee of compatibility with every mStudio host version.
+- [ ] Link the guide from the README and record the remaining productive-mStudio smoke checks separately.
+
+F6 is complete when another extension developer can copy the documented setup, understand what is protected by automation, and reproduce the remaining manual checks without investing days in a framework that this repository may be the only consumer of.
+
+#### F7 - Update german README from all the learnings
+
+As title says.
+
+#### Also worth raising
+
+- Document `initExtBridge()` as a **required setup step** for any extension that renders `<RemoteRoot>` and uses `useConfig()` / `useLanguage()`. In `1.3.5` the `/react` entry no longer initialises the global, so this is now load-bearing and easy to miss when migrating from `0.2.0-alpha.*`.
+- Suggest the compatibility matrix from §3.3 for the migration notes — "upgrade hosts before remotes" is not obvious from the changelog, and we only established it by reading `normalizeReadyEvent`.
+
+#### Deliverable
+
+**Upstream** (ready to file — F1/F2 are confirmed against published 1.3.5 sources):
+
+- [ ] One issue against <https://github.com/mittwald/flow> covering F1 + F2, with the §1.1 reproduction (lazy route chunk → ext-bridge evaluates after `RemoteRoot` mounts → silent skip → 7.5 s timeout in an unrelated component).
+- [ ] Mention F3 and the doc gaps in the same issue rather than splitting.
+
+**Local** (investigate before it can be classified):
+
+- [X] F4 — reproduce the missing-error-surfacing case on the v5-only stack and fix the extension's server-function error propagation.
+
+### 6.1 Smoke test checklist (run identically in Stages B, C, D)
+
+Reusable template — boxes are intentionally left unticked; each stage records its own pass above.
+
+- [ ] Dev server starts clean; no `customElements.define` duplicate errors.
+- [ ] Extension iframe console: `globalThis.mwExtBridge` is **defined** immediately after load.
+- [ ] No `"mwExtBridge is already defined ... installed multiple times"` warning.
+- [ ] Page renders; greeting, project card, readme, link cards all appear.
+- [ ] Project description edit works.
+- [ ] **Add a comment → `CommentMessage` renders.** This is the exact regression from §1.1 — it only mounts once a comment exists, so an empty list proves nothing.
+- [ ] Delete a comment works.
+- [ ] No `ExtBridgeError` in console, before or after the 7.5 s mark.
+
+---
+
+## 7. Rollback
+
+Working tree / branches only; no infrastructure changes. Both repos are on branches with checkpoint commits.
+
+- **Stage A/B failure** → problem is isolated to the mock host bump. The extension was never touched. Fix or abandon the host branch; nothing to restore in `reference-extension`.
+- **Stage C failure** → restore `package.json`, `pnpm-lock.yaml` and touched `src/` files from the extension's checkpoint commit, then clean-install. The upgraded mock host still works with the restored extension (that is exactly what Stage B proved), so you keep a working dev loop while investigating.
+- **Stage D failure** → productive mStudio disagrees with a locally-green build. Do not roll back blindly; capture the console output first, since this would mean mStudio's host version differs from `1.3.5`.
+
+---
+
+## 8. Open questions
+
+**Resolved by the upgrade:**
+
+- ~~Which protocol version does **productive mStudio** host speak?~~ **Answered: it speaks v5.** Stage D passed with the 1.3.5 extension against productive mStudio, so the forward-compat asymmetry from §3.3 does not apply there.
+- ~~Is there a migration guide for `0.2.0-alpha.*` → `1.x`?~~ Moot for this upgrade — Stages A–E completed without one. Still worth a look before the *next* Flow bump.
+
+**Still open:**
+
+- F4 (§6, Stage F): resolved in the extension. The issue was caused by the TanStack Start upgrade from `@tanstack/start-client-core` `1.139.11` to `1.170.33`, not by Flow protocol version skew.
+- Should the mock host start passing the new `hostConfig` prop (`language` / `theme`) so we can exercise `useLanguage()`?
+- Should we adopt `useLanguage()` / the `i18next` integration now? Default: no, keep the upgrade mechanical. Now a separate feature decision.
+- Is `@mittwald/flow-remote-react-components` actually used by the mock host, or can it be dropped from its `package.json`?
+- Do we want `next` (`1.4.0-next.5`) instead? Default answer: no — the goal was explicitly *stable*, and we are there.
+
+---
+
+## 9. Debugging cheat sheet (ext-bridge)
+
+- `globalThis.mwExtBridge` is `undefined` in the iframe → readiness will never be set; nothing will tell you.
+- Console warning `"mwExtBridge is already defined..."` → duplicate module instance; a second copy overwrote a ready bridge. Check `pnpm-lock.yaml` for multiple resolved `@mittwald/ext-bridge` entries and stale `node_modules/.pnpm/...` dirs.
+- `ExtBridgeError: Ext Bridge not ready after 7500ms` → almost always one of the two above, not an actual host connectivity problem.
+- `optimizeDeps.exclude: ["@mittwald/ext-bridge"]` means it is served as raw ESM in dev, so evaluation order is chunk-dependent. Never rely on it.
