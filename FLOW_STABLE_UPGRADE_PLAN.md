@@ -363,6 +363,20 @@ Worth proposing only if it can be made conditional (dev builds, or gated on the 
 
 **Note:** this is a *local* follow-up, not part of the upstream issue, until step 1 above proves otherwise. It may well turn out to be a gap in the mock host's own error surfacing — which would be a mock-host improvement, not a Flow bug.
 
+**Update:** Error from browser console, POST failing is visible in console but users get no clue:
+
+```
+XHR POST
+http://localhost:3000/_serverFn/eyJmaWxlIjoiL3NyYy9zZXJ2ZXJGdW5jdGlvbnMvY29tbWVudHMvYWRkLWNvbW1lbnQudHM_dHNzLXNlcnZlcmZuLXNwbGl0IiwiZXhwb3J0IjoiYWRkQ29tbWVudFNlcnZlckZ1bmN0aW9uX2NyZWF0ZVNlcnZlckZuX2hhbmRsZXIifQ
+[HTTP/1.1 500  93ms]
+```
+
+The POST failing with 500 is explained already as missing extension instance, but as mentioned user even gets green checkmark without further notice that posting comment failed.
+
+#### F5 - (Optional) Another bonus level: Comment field is not properly cleared
+
+When sending a comment, textarea is not cleared up, although app itself cries on empty field when re-sending. Probably binding of textarea against app data not done properly.
+
 #### Also worth raising
 
 - Document `initExtBridge()` as a **required setup step** for any extension that renders `<RemoteRoot>` and uses `useConfig()` / `useLanguage()`. In `1.3.5` the `/react` entry no longer initialises the global, so this is now load-bearing and easy to miss when migrating from `0.2.0-alpha.*`.
