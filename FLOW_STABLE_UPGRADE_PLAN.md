@@ -350,9 +350,11 @@ Worth proposing only if it can be made conditional (dev builds, or gated on the 
 
 **Reproduction steps**
 
-- [ ] Re-run the Stage B scenario on the **current** stack (1.3.5 extension × 1.3.5 mock host), deliberately pointing at a non-existent extension instance.
+- [X] Re-run the Stage B scenario on the **current** stack (1.3.5 extension × 1.3.5 mock host), deliberately pointing at a non-existent extension instance.
 - [ ] If the error surfaces correctly → it *was* skew. Close F4, and note in §3.3 that degraded error reporting is another symptom of running a v3 remote against a v5 host.
-- [ ] If it still does not surface → it is a real gap. Continue below.
+- [X] If it still does not surface → it is a real gap. Continue below.
+
+**Error did NOT surface in reproduction with updated flow everywhere!**
 
 **Where to look, cheapest first**
 
