@@ -770,6 +770,7 @@ Mit dieser Template könntest du beispielsweise folgende Extensions bauen:
 - **[zrok](https://zrok.io/)**: Tunneling für lokales Webhook-Testing
 - **[Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview)**: Datenbank-UI
 - **[Biome](https://biomejs.dev/)**: Linter und Formatter
+- **[Testing-Guide](./TESTING.md)**: Tools und Muster für isoliertes Testen einer Extension
 
 ### Support
 
