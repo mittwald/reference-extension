@@ -28,13 +28,13 @@ services:
       - tanstack-network
 
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     env_file:
       - .env
     ports:
       - "5433:5432"
     volumes:
-      - postgres-dev-data:/var/lib/postgresql/data
+      - postgres-dev-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

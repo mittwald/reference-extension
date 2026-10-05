@@ -95,9 +95,9 @@ Wir haben uns darum entschieden die Technologien anhand 3 Faktoren auszuwählen:
 
 Bevor du mit der Entwicklung beginnst, stelle sicher, dass folgende Software installiert ist:
 
-- **Node.js 22**: Diese Extension benötigt zwingend Node.js Version 22
+- **Node.js 24**: Das Projekt verwendet Node.js 24, festgelegt in `.nvmrc` und den Dockerfiles.
   ```bash
-  node --version  # Sollte v22.x.x ausgeben
+  node --version  # Sollte v24.x.x ausgeben
   ```
 - **pnpm 9.14.4+**: Package Manager (wird durch packageManager in package.json erzwungen)
   ```bash
@@ -317,6 +317,9 @@ Als Bearer kann ein [API Token](https://developer.mittwald.de/de/docs/v2/api/int
 git clone https://github.com/mittwald/reference-extension.git
 cd reference-extension
 
+# Falls du nvm verwendest: Version aus .nvmrc aktivieren
+nvm use
+
 # Dependencies installieren
 pnpm install
 ```
@@ -350,6 +353,10 @@ ENCRYPTION_MASTER_PASSWORD=changeme          # Für die Verschlüsselung der Ext
 ENCRYPTION_SALT=changeme                     # Für die Verschlüsselung der Extension Instance Secrets, wird im Folgenden erläutert
 ZROK_RESERVED_TOKEN=your_reserved_token_here # Für Webhooks, wird im Folgenden erläutert
 ```
+
+Für isolierte Tests kann zusätzlich `MITTWALD_API_BASE_URL` auf die Mock-API gesetzt werden, siehe [Testing-Guide](./TESTING.md#mstudio-api). **Das aktiviert einen ungesicherten Mock-Modus:** Session-Verifikation und echter Access-Token-Austausch werden durch feste Mock-Werte ersetzt, außerdem entfällt die Webhook-Signaturprüfung. Das gilt auch bei `NODE_ENV=production`. Die Variable darf in produktiven Umgebungen nicht gesetzt sein; eine solche Testumgebung darf weder echte Kundendaten enthalten noch öffentlich freigegeben werden.
+
+Vom App-Container aus bezeichnet `localhost` den Container selbst. Verwende für eine Mock-API auf dem Host eine aus dem Container erreichbare Host-Adresse; für einen anderen Container dessen erreichbaren Service-Namen. Nach Änderungen den Dev-Server neu starten beziehungsweise den Build neu erstellen, da die Client-Konfiguration beim Start oder Build festgelegt wird.
 
 Das `ENCRYPTION_MASTER_PASSWORD` und der `ENCRYPTION_SALT` werden benötigt, um einen Key für die Verschlüsselung abzuleiten.
 Diese können über das folgende Package Script erzeugt werden.
@@ -770,6 +777,7 @@ Mit dieser Template könntest du beispielsweise folgende Extensions bauen:
 - **[zrok](https://zrok.io/)**: Tunneling für lokales Webhook-Testing
 - **[Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview)**: Datenbank-UI
 - **[Biome](https://biomejs.dev/)**: Linter und Formatter
+- **[Testing-Guide](./TESTING.md)**: Tools und Muster für isoliertes Testen einer Extension
 
 ### Support
 

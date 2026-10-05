@@ -3,6 +3,8 @@
 Die Extension nutzt den `@mittwald/api-client`, um Daten aus der mittwald API abzurufen.
 Der Client wird mit einem **Access Token** authentifiziert, das aus dem **Session Token** generiert wird.
 
+Der folgende Ablauf beschreibt den regulären Betrieb. Mit gesetztem `MITTWALD_API_BASE_URL` verwendet die Extension stattdessen feste Mock-Identitäten und überspringt Session-Verifikation und echten Token-Austausch. Auch Webhook-Signaturen werden dann nicht geprüft. Dieser Modus ist ausschließlich für isolierte Tests vorgesehen, siehe [Mock-Modus und feste Identitäten](../TESTING.md#mstudio-api).
+
 ## Authentifizierungs-Flow
 
 1. User öffnet Extension im mStudio
