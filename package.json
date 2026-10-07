@@ -11,6 +11,7 @@
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "biome lint .",
+    "lint:migrate": "biome migrate --write",
     "lint:fix": "biome lint --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
