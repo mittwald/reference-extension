@@ -7,8 +7,8 @@ Dennoch nimmt es dem Entwickler einer Extension sehr viel Arbeit bei diesem krit
 ## Fehler-Architektur
 
 1. Domain Layer: Business-Logik wirft typisierte PublicError oder reguläre JavaScript Errors
-2. Middleware Layer: Middleware fängt Fehler und transformiert sie zu HTTP-Responses
-3. Server Function Layer: Server Functions propagieren Fehler zum Client
+2. Middleware Layer: Middleware fängt Fehler und wirft einen Error mit serialisiertem öffentlichen Fehlerkörper
+3. Server Function Layer: TanStack Start transportiert den geworfenen Fehler zum Client; das Promise wird abgelehnt
 4. Client Layer: UI-Komponenten dem User die Fehler an
 
 ## Fehler-Typen
@@ -43,6 +43,8 @@ export abstract class PublicError extends Error {
 Die `cause`-Property wird für das serverseitige Logging verwendet und nicht an das Frontend weitergegeben.
 Die `isRetryable`-Property steuert, ob im Frontend die Möglichkeit geboten wird, die Route erneut aufzurufen.
 
+`statusCode` ist eine Eigenschaft des fachlichen Fehlers. Die aktuelle Serverfunktions-Middleware setzt damit jedoch keinen HTTP-Status und überträgt diesen Wert auch nicht im öffentlichen Fehlerkörper. Ein fachlicher `403` bedeutet deshalb nicht, dass die Serverfunktion mit HTTP `403` antwortet; den HTTP-Transport übernimmt TanStack Start.
+
 Fehler, die transparent an das Frontend weitergegeben werden sollen, können von dieser Klasse erben.
 
 ```typescript
@@ -52,7 +54,7 @@ export class PermissionsInsufficientError extends PublicError {
         super(
             "Du hast nicht ausreichend Berechtigungen für diese Operation.",
             false,
-            403,    // HTTP Status
+            403,
             undefined,
             { extensionInstanceId },
         );
@@ -90,9 +92,9 @@ export const handleServerErrors = createMiddleware({
 });
 ```
 
-Abhängig davon, ob es sich um einen Fehler handelt,
-der an das Frontend weitergereicht werden soll oder nicht, wird eine HTTP Antwort erzeugt.
-Klassen, die von `PublicError` erben, werden grundsätzlich transparent an das Frontend weitergereicht.
+Die Hilfsfunktionen erzeugen jeweils `new Error(JSON.stringify(errorBody))`, den die Middleware wirft. Der öffentliche Fehlerkörper enthält `type`, `message`, `isRetryable` und `details`. Bei `PublicError` werden diese Informationen aus dem fachlichen Fehler übernommen; technische Ursachen und Stacktraces bleiben im Serverlog.
+
+Eine zurückgegebene `Response.json(...)` mit Fehlerstatus reicht hier nicht aus: Der Client-Transport kann sie als erfolgreiches Ergebnis behandeln, sodass ein Formular seinen Erfolgspfad ausführt. Nur der geworfene Fehler führt zum abgelehnten Promise. Der Client liest mit `parsePublicError` den JSON-Fehlerkörper aus `Error.message` und validiert ihn gegen `errorBodySchema`.
 
 Fehler, die durch die Zod Schema Validierung geworfen werden, werden ebenfalls durchgereicht.
 Dazu wird im Bootstrapping dieser Extension in der [`src/start.ts`](src/start.ts) die Sprache auf Deutsch gestellt
@@ -101,18 +103,20 @@ Dazu wird im Bootstrapping dieser Extension in der [`src/start.ts`](src/start.ts
 z.config(z.locales.de());
 ```
 
-Um dem Frontend zu ermöglichen, diese Fehler an Form Feldern darzustellen, enthält der Request Body folgende Properties:
+Um dem Frontend zu ermöglichen, Validierungsfehler an Formfeldern darzustellen, enthält der serialisierte Fehlerkörper folgende Properties:
 
-```
+```typescript
 {
+    "type": "ValidationError",
     "message": firstIssue.message,
+    "isRetryable": false,
     "details": {
         "affectedField": firstIssue.path[0],
     }
 }
 ```
 
-Alles Andere, insbesondere reguläre JavaScript `Errors` führen zu einem Statuscode `500` und einer verschleierten Error Message.
+Andere Fehler, insbesondere reguläre JavaScript `Errors`, werden als `UnknownError` mit der Meldung „Ein unerwarteter Fehler ist aufgetreten“, `isRetryable: false` und leeren `details` weitergegeben. Die Middleware setzt dafür keinen eigenen HTTP-Status. Die Regression für diesen Fehlertransport ist in `src/middleware/error-handling.test.ts` abgesichert.
 
 ## Client-seitiges Error Handling
 

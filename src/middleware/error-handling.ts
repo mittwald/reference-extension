@@ -50,48 +50,42 @@ function parseZodValidationError(error: unknown): ZodIssue[] | null {
     }
 }
 
-function buildValidationError(validationIssues: ZodIssue[]): Response {
+function buildValidationError(validationIssues: ZodIssue[]): Error {
     console.log(`error is a validation error`);
     const firstIssue = validationIssues[0];
 
-    return Response.json(
-        {
+    return new Error(
+        JSON.stringify({
             type: "ValidationError",
             message: firstIssue.message,
             isRetryable: false,
             details: {
                 affectedField: firstIssue.path[0],
             },
-        },
-        {
-            status: 400,
-        },
+        }),
     );
 }
 
-function buildPublicError(error: PublicError): Response {
+function buildPublicError(error: PublicError): Error {
     console.log(`error is known, responding with ${error.statusCode}`);
-    return Response.json(
-        {
+    return new Error(
+        JSON.stringify({
             type: error.name,
             message: error.message,
             isRetryable: error.isRetryable,
             details: error.details,
-        } as ErrorBody,
-        {
-            status: error.statusCode,
-        },
+        } as ErrorBody),
     );
 }
 
-function buildUnknownError(): Response {
+function buildUnknownError(): Error {
     console.log("error is unknown, responding with status 500");
-    return Response.json(
-        {
+    return new Error(
+        JSON.stringify({
             type: "UnknownError",
             message: "Ein unerwarteter Fehler ist aufgetreten",
             isRetryable: false,
-        },
-        { status: 500 },
+            details: {},
+        }),
     );
 }

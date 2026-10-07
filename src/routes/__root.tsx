@@ -1,3 +1,4 @@
+import "@mittwald/ext-bridge/browser";
 import { LayoutCard } from "@mittwald/flow-remote-react-components";
 import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";

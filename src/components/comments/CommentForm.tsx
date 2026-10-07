@@ -26,7 +26,11 @@ export const CommentForm = () => {
 
     const { showBoundary } = useErrorBoundary();
 
-    const form = useForm<FormValues>({});
+    const form = useForm<FormValues>({
+        defaultValues: {
+            text: "",
+        },
+    });
 
     const Field = typedField(form);
 
@@ -66,7 +70,7 @@ export const CommentForm = () => {
 
                 <ActionGroup>
                     <Flex justify="end" gap="m" direction="row-reverse">
-                        <Action action={resetComments}>
+                        <Action onAction={resetComments}>
                             <Button variant="soft" color="secondary">
                                 Kommentare aufräumen
                             </Button>
