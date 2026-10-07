@@ -1,4 +1,4 @@
-import { initExtBridge } from "@mittwald/ext-bridge/browser";
+import "@mittwald/ext-bridge/browser";
 import { LayoutCard } from "@mittwald/flow-remote-react-components";
 import RemoteRoot from "@mittwald/flow-remote-react-components/RemoteRoot";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,8 +10,6 @@ import {
 } from "@tanstack/react-router";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/components/ErrorFallback.tsx";
-
-initExtBridge();
 
 interface RouterContext {
     queryClient: QueryClient;
