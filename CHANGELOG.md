@@ -1,5 +1,19 @@
 # @mittwald/reference-extension
 
+## 1.1.0
+
+### Minor Changes
+
+- 6f3b2b8: added feature to auto migrate database schema on application start
+
+### Patch Changes
+
+- 0d61090: added script to initialize encryption secrets
+- 7d7ea3d: switch to Node.js 26 and update all dependencies (incl. pnpm 12, Vite 8, TypeScript 7, Flow components 1.5) and add a 7-day minimum release age for new package versions
+- ec7a936: cascade delete comments when extension instances get deleted
+- 71425f4: do not use sudo for zrok by default but let the user decide
+- 29a559b: no longer ignore PORT env
+
 ## 1.0.0
 
 ### Major Changes
