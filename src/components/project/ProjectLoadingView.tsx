@@ -1,19 +1,19 @@
 import {
-    Align,
     Avatar,
+    Combine,
     Skeleton,
     Text,
 } from "@mittwald/flow-remote-react-components";
 
 export const ProjectLoadingView = () => {
     return (
-        <Align>
+        <Combine>
             <Avatar>
                 <Skeleton />
             </Avatar>
             <Text>
                 <Skeleton width="200px" />
             </Text>
-        </Align>
+        </Combine>
     );
 };

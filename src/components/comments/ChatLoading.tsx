@@ -1,8 +1,8 @@
 import {
     ActionGroup,
-    Align,
     Avatar,
     Button,
+    Combine,
     Content,
     Flex,
     Header,
@@ -18,10 +18,10 @@ export function ChatLoading() {
         <MessageThread>
             <Message type="responder">
                 <Header>
-                    <Align>
+                    <Combine>
                         <Avatar />
                         <SkeletonText width="80px" />
-                    </Align>
+                    </Combine>
                 </Header>
                 <Content>
                     <Text>
@@ -32,10 +32,10 @@ export function ChatLoading() {
 
             <Message type="sender">
                 <Header>
-                    <Align>
+                    <Combine>
                         <Avatar />
                         <SkeletonText width="80px" />
-                    </Align>
+                    </Combine>
                 </Header>
                 <Content>
                     <Text>
@@ -46,10 +46,10 @@ export function ChatLoading() {
 
             <Message type="responder">
                 <Header>
-                    <Align>
+                    <Combine>
                         <Avatar />
                         <SkeletonText width="80px" />
-                    </Align>
+                    </Combine>
                 </Header>
                 <Content>
                     <Text>

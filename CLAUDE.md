@@ -7,3 +7,4 @@
 - A green build does not prove the server starts: smoke-test `node .output/server/index.mjs` after nitro/bundler updates. Custom nitro `exportConditions` containing `import` made `pg` resolve the `pg-pool` ESM wrapper for `require()` and crashed at startup.
 - `pnpm-workspace.yaml` holds pnpm settings (`allowBuilds`, `minimumReleaseAge`) and must be copied into every Docker install stage.
 - Node.js 25+ no longer ships corepack: Docker images install a pinned `corepack` via npm before `corepack enable`.
+- Deprecation scans of Flow must cover whole components, not only props (e.g. `Align` → `Combine`): search `@deprecated` with enough trailing context to reach the `export declare const` line.
