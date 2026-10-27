@@ -1,7 +1,7 @@
 import { useConfig } from "@mittwald/ext-bridge/react";
 import {
-    Align,
     Avatar,
+    Combine,
     Content,
     Header,
     Message,
@@ -24,12 +24,12 @@ export const CommentMessageLoading = (props: CommentMessageProps) => {
     return (
         <Message type={messageType}>
             <Header>
-                <Align>
+                <Combine>
                     <Avatar></Avatar>
                     <Text>
                         <SkeletonText width="80px" />
                     </Text>
-                </Align>
+                </Combine>
                 <Text>{comment.createdAt.toLocaleString()}</Text>
             </Header>
             <Content>

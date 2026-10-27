@@ -1,6 +1,6 @@
 import {
-    Align,
     Avatar,
+    Combine,
     Image,
     Initials,
     Text,
@@ -11,7 +11,7 @@ export const ProjectView = () => {
     const project = ProjectClientGhost.getProjectOfExtensionInstance().use();
 
     return (
-        <Align>
+        <Combine>
             <Avatar>
                 {project.imageRefId ? (
                     <Image
@@ -26,6 +26,6 @@ export const ProjectView = () => {
                 <strong>{project.description}</strong>
                 Erstellt am {new Date(project.createdAt).toLocaleDateString()}
             </Text>
-        </Align>
+        </Combine>
     );
 };

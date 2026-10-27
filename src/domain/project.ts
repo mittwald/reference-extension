@@ -27,7 +27,7 @@ export async function editProjectDescription(
     projectId: string,
     projectDescription: string,
 ): Promise<void> {
-    const response = await mittwaldClient.project.updateProjectDescription({
+    const response = await mittwaldClient.project.updateProject({
         projectId,
         data: {
             description: projectDescription,

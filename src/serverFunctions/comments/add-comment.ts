@@ -11,7 +11,7 @@ export const addCommentServerFunction = createServerFn({
     method: "POST",
 })
     .middleware([authenticationMiddlewareWithAccessToken])
-    .inputValidator(addCommentInputSchema)
+    .validator(addCommentInputSchema)
     .handler(async ({ context: { extensionInstanceId, userId }, data }) => {
         const storage = new DrizzleCommentStorage();
         await storage.addComment({
