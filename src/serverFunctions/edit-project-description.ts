@@ -11,7 +11,7 @@ export const editProjectDescriptionServerFunction = createServerFn({
     method: "POST",
 })
     .middleware([authenticationMiddlewareWithAccessToken])
-    .inputValidator(editProjectDescriptionInputSchema)
+    .validator(editProjectDescriptionInputSchema)
     .handler(
         async ({
             context: { mittwaldClient, extensionInstanceId, contextId },

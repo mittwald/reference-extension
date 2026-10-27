@@ -95,11 +95,11 @@ Wir haben uns darum entschieden die Technologien anhand 3 Faktoren auszuwählen:
 
 Bevor du mit der Entwicklung beginnst, stelle sicher, dass folgende Software installiert ist:
 
-- **Node.js 24**: Diese Extension benötigt zwingend Node.js Version 24
+- **Node.js 26**: Diese Extension benötigt zwingend Node.js Version 26
   ```bash
-  node --version  # Sollte v24.x.x ausgeben
+  node --version  # Sollte v26.x.x ausgeben
   ```
-- **pnpm 9.14.4+**: Package Manager (wird durch packageManager in package.json erzwungen)
+- **pnpm 12.14.0+**: Package Manager (wird durch packageManager in package.json erzwungen)
   ```bash
   npm install -g pnpm
   ```

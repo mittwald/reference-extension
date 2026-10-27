@@ -1,9 +1,11 @@
 import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { getSessionToken } from "@mittwald/ext-bridge/browser";
 import { getAccessToken, verify } from "@mittwald/ext-bridge/node";
-import { createMiddleware } from "@tanstack/react-start";
+import {
+    createMiddleware,
+    type FunctionMiddlewareClientNextFn,
+} from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
-import type { FunctionMiddlewareClientNextFn } from "@tanstack/start-client-core";
 import { getEnvironmentVariables } from "../env";
 
 type VerifiedSessionToken = Awaited<ReturnType<typeof verify>>;

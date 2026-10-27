@@ -9,7 +9,7 @@ import {
 
 export const ReadmeCard = () => {
     return (
-        <AccentBox color="gradient">
+        <AccentBox backgroundColor="gradient">
             <Flex align="center" wrap="wrap" gap="m">
                 <Flex direction="column" grow>
                     <Heading size="l">
